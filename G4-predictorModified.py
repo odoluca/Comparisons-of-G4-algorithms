@@ -217,13 +217,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     basefname = os.path.basename(args.fasta_name).split('.')[0]
-    outDirName = os.curdir
-    outWinName = os.path.join(outDirName,
-                              basefname + "_" + str(args.window_width) + "nts.tsv")
-    outputWindows = open(outWinName, 'w')
-    outRegionName = os.path.join(outDirName,
-                                 basefname + "_"+str(args.threshold)+"_merged.tsv")
-    outputRegions = open(outRegionName, 'w')
+    # outDirName = os.curdir
+    # outWinName = os.path.join(outDirName,
+    #                           basefname + "_" + str(args.window_width) + "nts.tsv")
+    # outputWindows = open(outWinName, 'w')
+    # outRegionName = os.path.join(outDirName,
+    #                              basefname + "_"+str(args.threshold)+"_merged.tsv")
+    # outputRegions = open(outRegionName, 'w')
 
     # print "Input file:", os.path.basename(args.fasta_name)
     G4predictor(args.fasta_name,  args.window_width, args.threshold)
