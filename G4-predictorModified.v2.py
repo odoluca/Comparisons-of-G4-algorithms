@@ -1,3 +1,5 @@
+
+
 """
 Original code by JocelynSP at https://github.com/JocelynSP/G4-Hunter/tree/master
 modified to report in a standardized format.
@@ -156,7 +158,12 @@ def G4predictor(inFasta, win_width, thresh):
                             predG4seq = seq_curr.seq[predG4start - 1] + predG4seq
                             predG4start -= 1
                     else:  # strip off leading A and T nucleotides
+                        oldseq=predG4seq
                         predG4seq = win_curr.seq.lstrip("AT")
+
+                        # print oldseq[len(predG4seq)]
+                        predG4seq = oldseq[len(predG4seq)]+predG4seq
+
                         predG4start = i + win_width - len(predG4seq)
                 else:  # current window extends current G4 region
                     if prevWinPass:  # simple case of adjacent windows
@@ -173,7 +180,9 @@ def G4predictor(inFasta, win_width, thresh):
                         if predG4seq[-1] == win_curr.seq[-1]:
                             predG4seq = predG4seq + win_curr.seq[-1]
                     else:  # strip off trailing A and T nucleotides
+                        oldseq = predG4seq
                         predG4seq = predG4seq.rstrip("AT")
+                        predG4seq = predG4seq+oldseq[len(predG4seq)]
                     predG4end = predG4start + len(predG4seq)
 
                 prevWinPass = False
@@ -216,14 +225,14 @@ if __name__ == "__main__":
                         help='Threshold for absolute value of score to predict a quadruplex region. Typical value 1.0 to 1.5')
 
     args = parser.parse_args()
-    basefname = os.path.basename(args.fasta_name).split('.')[0]
-    outDirName = os.curdir
-    outWinName = os.path.join(outDirName,
-                              basefname + "_" + str(args.window_width) + "nts.tsv")
-    outputWindows = open(outWinName, 'w')
-    outRegionName = os.path.join(outDirName,
-                                 basefname + "_"+str(args.threshold)+"_merged.tsv")
-    outputRegions = open(outRegionName, 'w')
+    # basefname = os.path.basename(args.fasta_name).split('.')[0]
+    # outDirName = os.curdir
+    # outWinName = os.path.join(outDirName,
+    #                           basefname + "_" + str(args.window_width) + "nts.tsv")
+    # outputWindows = open(outWinName, 'w')
+    # outRegionName = os.path.join(outDirName,
+    #                              basefname + "_"+str(args.threshold)+"_merged.tsv")
+    # outputRegions = open(outRegionName, 'w')
 
     # print "Input file:", os.path.basename(args.fasta_name)
     G4predictor(args.fasta_name,  args.window_width, args.threshold)
