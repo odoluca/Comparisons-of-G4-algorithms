@@ -36,10 +36,11 @@ def main(argv):
 
    inputfile = ''
    outputfile = ''
+   noreverse=False
    try:
-      opts, args = getopt.getopt(argv,"hf:o:w:s:",["help","ffile=","ofile="])
+      opts, args = getopt.getopt(argv,"hf:o:w:s:n",["help","ffile=","ofile=","noreverse"])
    except getopt.GetoptError:
-      print '\033[1m' +'python G4Hunter.py -f <inputfile> -o <outputrepository> -w <window> -s <score threshold>\n'+'\033[0;0m'
+      print '\033[1m' +'python G4Hunter.py -f <inputfile> -o <outputrepository> -w <window> -s <score threshold> --noreverse\n'+'\033[0;0m'
       sys.exit(1)
       
    for opt, arg in opts:
@@ -50,8 +51,10 @@ def main(argv):
 
           print 'G4Hunter takes into account G-richness and G-skewness of a given sequence and gives a quadruplex propensity score as output.'
           print 'To run G4Hunter use the commande line: \n'
-          print  '\033[1m' +'python G4Hunter.py -f <inputfile> -o <outputrepository> -w <window> -s <score threshold>\n'+'\033[0;0m'
+          print  '\033[1m' +'python G4Hunter.py -f <inputfile> -o <outputrepository> -w <window> -s <score threshold> --noreverse\n'+'\033[0;0m'
           sys.exit()
+      elif opt in ("--noreverse"):
+         noreverse=True
       elif opt in ("-f", "--ffile"):
          inputfile= arg
       elif opt in ("-o", "--ofile"):
@@ -61,7 +64,7 @@ def main(argv):
       elif opt in ("-s", "--score"):
          score = arg
              
-   return  inputfile, outputfile, int(window), float(score)
+   return  inputfile, outputfile, int(window), float(score), noreverse
 
 #calcule le score de chaque base dans un fichier qui peut contenir plusieur sequences fasta
 #le fichier doit comporter la nom de la seq + la sequence en une seul ligne donc pas de \n ou \r 
@@ -211,7 +214,7 @@ class Soft(object):
                 # fileout.write("\n")
         return LG4
    
-    def WriteSeq(self,line,liste, LISTE,header, F, Len ):
+    def WriteSeq(self,line,liste, LISTE,header, F, Len , noreverse ):
         i,k,I=0,0,0
         a=b=LISTE[i]
         MSCORE=[]
@@ -227,7 +230,7 @@ class Soft(object):
                     I=I+1
                     seq=line[a:a+F+k]
                     sequence,liste2=self.BaseScore(seq)
-                    self.Write( a, k ,F,0, seq ,len(seq) , round(np.mean(liste2),2),header,"")
+                    self.Write( a, k ,F,0, seq ,len(seq) , round(np.mean(liste2),2),header,"", noreverse)
                     MSCORE.append(abs(round(np.mean(liste2),2)))
                     # fileout.write("\n")
                     k=0
@@ -238,7 +241,7 @@ class Soft(object):
             I=I+1
             seq=line[a:a+F+k+1]
             sequence,liste2=self.BaseScore(seq)
-            self.Write( a, k ,F,1, seq ,len(seq) , round(np.mean(liste2),2),header,"")
+            self.Write( a, k ,F,1, seq ,len(seq) , round(np.mean(liste2),2),header,"", noreverse)
             MSCORE.append(abs(round(np.mean(liste2),2)))
             # fileout.write("\t")
             # fileout.write(str(I))
@@ -255,8 +258,10 @@ class Soft(object):
         #     fileout.write("\n")
         return MSCORE
     
-    def Write(self, i, k ,F,X, seq ,long, score, source, strand):
+    def Write(self, i, k ,F,X, seq ,long, score, source, strand, noreverse):
         if score<0:
+            if noreverse:
+                return
             strand="-"
             G4sequence=self.ReverseComplement(seq)
         else:
@@ -275,7 +280,7 @@ class Soft(object):
 
 
 if __name__ == "__main__":
-    inputfile, outputfile , window, score = main(sys.argv[1:])
+    inputfile, outputfile , window, score, noreverse = main(sys.argv[1:])
     # print window
     # OPF= os.listdir(outputfile)
     # flag=False
@@ -315,7 +320,7 @@ if __name__ == "__main__":
     for i in range(len(DNASeq)):
         G4Seq=soft1.GetG4(DNASeq[i], ScoreListe[i], float(score), int(window), HeaderListe[i], len(NumListe[i]))
         if (len(G4Seq)>0):
-            MSCORE=soft1.WriteSeq(DNASeq[i],ScoreListe[i], G4Seq, HeaderListe[i], int(window), len(NumListe[i]))
+            MSCORE=soft1.WriteSeq(DNASeq[i],ScoreListe[i], G4Seq, HeaderListe[i], int(window), len(NumListe[i]), noreverse)
         # plot.append(MSCORE)
     # soft1.plot2(ScoreListe[0], outputfile +"/Results/")
     filein.close()
