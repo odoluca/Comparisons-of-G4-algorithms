@@ -2,6 +2,11 @@ import os
 import subprocess
 import time, math
 import re
+
+
+
+
+
 file="Mitochondria_NC_012920_1.fasta"
 file="test 1.fa"
 #file="testedG4s.fa"
@@ -22,14 +27,14 @@ quadparserCommand = 'python ImGQfinder.v2.py -r "([G]{3,} | (?P<mis>[G]{1,}[ATC]
 # quadparserCommand = 'python ImGQfinder.v2.py -r "( [G]{2,} | (?P<mis>[G]{1,}[AT][G]{1,})) (\w{1,5}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AT][G]{1,})) )) (\w{1,5}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AT][G]{1,})) ))(\w{1,5}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AT][G]{1,})) ))+" '
 # quadparserCommand = 'python ImGQfinder.v2.py -r "\w([G]{3,}?| (?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) (\w{1,7}?  (?(mis)[G]{3,}?| ([G]{3,}?|(?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) )){3,}\w" '  # only perfect and buldged BEING TESTED
 # quadparserCommand = 'python ImGQfinder.v2.py -r "\w([G]{3,}?| (?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) (\w{1,5}?  (?(mis)[G]{3,}?| ([G]{3,}?|(?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) )){3,}\w" '  # only perfect and buldged BEING TESTED
-quadparserCommand = 'python ImGQfinder.v2.py -r "([G]{3,}?| (?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) (\w{1,7}?  (?(mis)[G]{3,}?| ([G]{3,}?|(?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) )){3,}" ' # Target:perfect and bulged.
+# quadparserCommand = 'python ImGQfinder.v2.py -r "([G]{3,}?| (?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) (\w{1,7}?  (?(mis)[G]{3,}?| ([G]{3,}?|(?P<mis>[G]{2,}[ATC][G]{1,}|[G]{1,}[ATC][G]{2,})) )){3,}" ' # Target:perfect and bulged.
                                                                                                                                                                                                                 # status for synthetic dataset: Bulged:100/100 Mismatched:66/100
 
 # quadparserCommand = 'python G4-predictorModified.py -w 30 -s 1.4 '  # shell command for quadparser command
 # quadparserCommand = 'python G4-predictorModified.py -w 25 -s 1.2 '  # shell command for quadparser command
 # quadparserCommand = 'python G4-predictorModified.py -w 20 -s 1.2 '  # shell command for quadparser command
 # quadparserCommand = 'python G4-predictorModified.v2b.py -w 30 -s 1.4 '  # shell command for quadparser command
-# quadparserCommand = 'python G4HunterModified.v2.py -w 25 -s 1.4 '  # shell command for quadparser command
+quadparserCommand = 'python G4HunterModified.v2.py -w 25 -s 1.0 '  # shell command for quadparser command
 starttime=time.time()
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 # print  output
