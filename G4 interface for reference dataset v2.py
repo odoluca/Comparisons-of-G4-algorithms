@@ -21,6 +21,7 @@ def G4HScore(seq):
             if i==len(seq): break
         if not GTract:
             while seq[i]=="C":
+                # if baseScore[i-k]>0:baseScore[i-k]=0
                 tractScore=[max(-k,-4)]*k
                 k+=1
                 i+=1
@@ -60,8 +61,8 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{3,} | (?P<mis
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,})) ))+" ' #status for reference dataset: MCC:0.780, precision 94.1%
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,12}   (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,})) ))+" ' #status for reference dataset: MCC:0.780, precision 94.1%
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,7}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,7}  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{2,})) ))+" ' #status for reference dataset: MCC:0.787, precision 94.4%
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{2,}))))  (\w{1,12}  (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{2,})) ))+" ' #status for reference dataset: MCC:0.809, precision 95.0%
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}  (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,})) ))+" ' #status for reference dataset: MCC:0.809, precision 95.0%
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( \w{1,11}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{2,}))))  (\w{1,12}  (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{2,})) ))+" ' #status for reference dataset: MCC:0.809, precision 95.0%
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{2,}[AUT][G]{1,}|[G]{1,}[AUT][G]{2,}))  ( \w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{2,}[AUT][G]{1,}|[G]{1,}[AUT][G]{2,}))))  (\w{1,12}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{2,}[AUT][G]{1,}|[G]{1,}[AUT][G]{2,}))))  (\w{1,12}  (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{2,}[AUT][G]{1,}|[G]{1,}[AUT][G]{2,}))))+" ' #status for reference dataset: MCC:0.809, precision 95.0%
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( (?P<edge>[G]{3,})|[G]{2,})  ( \w{1,9}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  (\w{1,9}   (?(mis)[G]{3,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))+  (\w{1,9}(?(edge)[G]{2,}|[G]{3,}))" ' #status for reference dataset: MCC:0.809, precision 95.0%
 
 
@@ -116,7 +117,7 @@ output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=Tr
 
 print(time.time()-starttime)
 
-G4HScoreTreshold=.9
+G4HScoreTreshold=0.9
 TP=0
 FP=0
 G4List=[]
