@@ -37,7 +37,8 @@ def G4HScore(seq):
 
 def constructRegex(parametersList):
     (ifull, ishort, ilong, iloop, mfull, mshort, mlong, mloop, eloop, efull, elong, eshort)=tuple(parametersList[:12])
-    quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{'+str(ifull)+',} | (?P<mis>[G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})) (\w{1,'+str(iloop)+'}  (?(mis)[G]{'+str(mfull)+',}| ([G]{'+str(mfull)+',}|(?P<mis>[G]{'+str(mlong)+',}[AUTC][G]{'+str(mshort)+',}|[G]{'+str(mshort)+',}[AUTC][G]{'+str(mlong)+',})) )) (\w{1,'+str(mloop)+'}  (?(mis)[G]{'+str(mfull)+',}| ([G]{'+str(mfull)+',}|(?P<mis>[G]{'+str(mlong)+',}[AUTC][G]{'+str(eshort)+',}|[G]{'+str(mshort)+',}[AUTC][G]{'+str(mlong)+',})) ))(\w{1,'+str(mloop)+'}  (?(mis)[G]{'+str(efull)+',}| ([G]{'+str(efull)+',}|(?P<mis>[G]{'+str(eshort)+',}[AUTC][G]{'+str(elong)+',}|[G]{'+str(elong)+',}[AUTC][G]{'+str(eshort)+',})) ))" ' #only perfect and buldged
+    quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{'+str(ifull)+',} | (?P<mis>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))  ( ((\w{1,'+str(iloop)+'})|(?P<lloop>\w{1,'+str(eloop)+'}) )  (?(mis)[G]{'+str(ifull)+',}| ([G]{'+str(ifull)+',}|(?P<mis>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))))  ( (?(lloop)\w{1,'+str(iloop)+'}|(?P<lloop>\w{1,'+str(ilong)+'}) )  (?(mis)[G]{'+str(ifull)+',}| ([G]{'+str(ifull)+',}|(?P<mis>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))))  ((?(lloop)\w{1,'+str(iloop)+'}|(?P<lloop>\w{1,'+str(ilong)+'}) )   (?(mis)[G]{'+str(ifull)+',}| ([G]{'+str(ifull)+',}|(?P<mis>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',}))) ))+" '  # status for reference dataset: MCC:0.809, precision 95.0%
+
     #if you want to search for both strands remove "--noreverse"
     return quadparserCommand
 
@@ -121,7 +122,8 @@ if __name__=="__main__":
 
     ListOfParameters=[]
     for k in range(1000):
-        ListOfParameters.append([randint(1,4),randint(1,4),randint(1,4),randint(1,15),randint(1,4),randint(1,4),randint(1,4),randint(1,15),randint(0,15),randint(1,4),randint(1,4),randint(1,4),randint(5,15)])
+        ListOfParameters.append([randint(2,4),randint(1,4),randint(1,4),randint(1,12),randint(1,4),randint(1,4),randint(1,4),randint(1,15),randint(7,40),randint(1,4),randint(1,4),randint(1,4),randint(5,15)])
+                                     # ifull, ishort, ilong, iloop, mfull, mshort, mlong, mloop, eloop, efull, elong, eshort, GScoreTresh
 
     print(ListOfParameters)
 
@@ -134,14 +136,14 @@ if __name__=="__main__":
         for params in ListOfParameters:
             output= callCommand(constructRegex(params),filename)
             MCC=MCCCalc(output,0.0) #If you do not want G4Hunter filtration, set the second parameter to 0.0. The system will still randomize the last parameter but only 0.0 will be used. default=params[-1]/10.0
-            if MCC>0.6:
+            if MCC>0.65:
                 succesfulParams.append(params)
                 succesfulMMCs.append(MCC)
                 print params,MCC
-                if MCC>0.7:
+                if MCC>0.75:
                     succesfulParams.append(params)
                     succesfulMMCs.append(MCC)
-                    if MCC>0.8:
+                    if MCC>0.85:
                         succesfulParams.append(params)
                         succesfulMMCs.append(MCC)
 
