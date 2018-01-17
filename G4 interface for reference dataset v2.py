@@ -115,7 +115,7 @@ quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w 25 -s 1 '  # s
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{3,} | (?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))  ( ((\w{1,7})|(?P<lloop>\w{1,30}) )  (?(mis)[G]{3,}| ([G]{3,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))))  ( (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )  (?(mis)[G]{3,}| ([G]{3,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))))  ((?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )   (?(mis)[G]{3,}| ([G]{3,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,}))) ))+" ' #status for reference dataset: MCC:0.724
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>([G]{1,}[AUTC][G]{1,})))  ( ((\w{1,7})|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUTC][G]{1,})))))  ( (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUTC][G]{1,})))))  ((?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )   (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUTC][G]{1,}))) ))+" ' #status for reference dataset: MCC:0.820
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>([G]{1,}[AUT][G]{1,})))  ( ((\w{1,7})|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUT][G]{1,})))))  ( (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUT][G]{1,})))))  ((?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )   (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>([G]{1,}[AUT][G]{1,}))) ))+" ' #status for reference dataset: MCC:0.820
-89
+
 
 # quadparserCommand = 'python G4-predictorModified.py -w 20 -s 1.1 '  #
 starttime=time.time()
@@ -124,7 +124,7 @@ output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=Tr
 
 print(time.time()-starttime)
 
-G4HScoreTreshold=0.0
+G4HScoreTreshold=0
 TP=0
 FP=0
 G4List=[]
