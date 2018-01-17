@@ -105,9 +105,8 @@ quadparserCommand = 'python quadparserModified.v3.py -r "([gG]{2,}\w{1,7}){3,}[g
 # quadparserCommand = 'python G4HunterModified.v2.py -w 30 -s 1.6 '  # status for reference dataset: MCC:0.130, precision 100%
 # quadparserCommand = 'python G4HunterModified.v2.py -w 30 -s 1.7 '  # status for reference dataset: MCC:0.120, precision 100%
 
-# quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w 20 -s 1 '  # status for reference dataset: MCC:0.764, precision 94.6%
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{1,} | (?P<mis>[G]{2,}[AUTC][G]{2,}|[G]{2,}[AUTC][G]{2,})) (\w{1,6}  (?(mis)[G]{1,}| ([G]{1,}|(?P<mis>[G]{2,}[AUTC][G]{4,}|[G]{4,}[AUTC][G]{2,})) )) (\w{1,11}  (?(mis)[G]{1,}| ([G]{1,}|(?P<mis>[G]{2,}[AUTC][G]{2,}|[G]{4,}[AUTC][G]{2,})) ))(\w{1,11}  (?(mis)[G]{1,}| ([G]{1,}|(?P<mis>[G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})) ))"  -f "testedG4s3.fa"'  # status for reference dataset: MCC:0.764, precision 94.6%
 
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis>[G]{1,}[AUT][G]{1,}))  ( ((\w{1,7})|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  ( (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )  (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,}))))  ((?(lloop)\w{1,7}|(?P<lloop>\w{1,30}) )   (?(mis)[G]{2,}| ([G]{2,}|(?P<mis>[G]{1,}[AUT][G]{1,})) ))+" ' #status for reference dataset: MCC:0.809, precision 95.0%
 
 # quadparserCommand = 'python G4-predictorModified.py -w 20 -s 1.1 '  #
 starttime=time.time()
