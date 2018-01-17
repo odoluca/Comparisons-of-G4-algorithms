@@ -136,11 +136,11 @@ if __name__=="__main__":
         for params in ListOfParameters:
             output= callCommand(constructRegex(params),filename)
             MCC=MCCCalc(output,0.0) #If you do not want G4Hunter filtration, set the second parameter to 0.0. The system will still randomize the last parameter but only 0.0 will be used. default=params[-1]/10.0
-            if MCC>0.65:
+            if MCC>0.7:
                 succesfulParams.append(params)
                 succesfulMMCs.append(MCC)
                 print params,MCC
-                if MCC>0.75:
+                if MCC>0.78:
                     succesfulParams.append(params)
                     succesfulMMCs.append(MCC)
                     if MCC>0.85:
@@ -163,6 +163,7 @@ if __name__=="__main__":
         succesfulParams=bestParams
         # print bestParams
 
+        #cross breed to make new children...it can also introduce mutation
         ListOfParameters= CrossBreed(succesfulParams,1000)
     print "RESULTS:"
     maxMCC=succesfulMMCs[0]
