@@ -166,17 +166,6 @@ def sort_table(table, cols):
     return (table)
 
 
-# if __name__ == '__main__':
-#    mytable = (
-#        ('Joe', 'Clark', '1989'),
-#        ('Charlie', 'Babbitt', '1988'),
-#        ('Frank', 'Abagnale', '2002'),
-#        ('Bill', 'Clark', '2009'),
-#        ('Alan', 'Clark', '1804'),
-#        )
-#    for row in sort_table(mytable, (1,0)):
-#        print(row)
-
 """                           END of SORTER
 -----------------------------------------------------------------------------
 """
@@ -199,30 +188,32 @@ while True:
             break
     ref_seq = ''.join(ref_seq)
     for m in psq_re_f.finditer(ref_seq,overlapped=True):
-        #merge if overlapping with previous:
-        #if len(gquad_list)>0:
-        #    print "+",len(gquad_list),(m.start()<=gquad_list[-1][2]), (chr==gquad_list[-1][0]),m.group(0)
+        #region: merge if overlapping with previous:
+        if len(gquad_list)>0:
+           print "+",len(gquad_list),(m.start()<=gquad_list[-1][2]), (chr==gquad_list[-1][0]),m.group(0)
+        #endregion
         if (len(gquad_list)>0) and gquad_list[-1][4]=="+" and (m.start()<=gquad_list[-1][2]) and (chr==gquad_list[-1][0]):
             orj=gquad_list[-1]
             new_seq=orj[5]+m.group(0)[orj[2]-m.start():]
             gquad_list[-1]=[chr, orj[1], m.end(), m.end()-orj[1], '+', new_seq,
                             new_seq]
         else:
-            #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_for'
+            #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_for' #id is no longer used
             gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '+', m.group(0),
                              m.group(0)])  # modification: added sequence again
     if args.noreverse is False:
         for m in psq_re_r.finditer(ref_seq,overlapped=True):
-            # merge if overlapping with previous:
-            #if len(gquad_list) > 0:
-            #    print "-", len(gquad_list), (gquad_list[-1][4]=="-"),(m.start() <= gquad_list[-1][2]), (chr == gquad_list[-1][0]),m.group(0),m.start(),gquad_list[-1][2],(chr == gquad_list[-1][0])
+            # region: merge if overlapping with previous:
+            if len(gquad_list) > 0:
+               print "-", len(gquad_list), (gquad_list[-1][4]=="-"),(m.start() <= gquad_list[-1][2]), (chr == gquad_list[-1][0]),m.group(0),m.start(),gquad_list[-1][2],(chr == gquad_list[-1][0])
+            #endregion
             if (len(gquad_list) > 0) and gquad_list[-1][4]=="-" and (m.start() <= gquad_list[-1][2]) and (chr == gquad_list[-1][0]):
                 orj = gquad_list[-1]
                 new_seq = orj[5] + m.group(0)[orj[2] - m.start():]
                 gquad_list[-1] = [chr, orj[1], m.end(), m.end() - orj[1], '-', new_seq,
                                   ReverseComplement(new_seq)]
             else:
-                #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_rev'
+                #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_rev' #id is no longer used
                 gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '-', m.group(0),
                                    ReverseComplement(m.group(0))])  # modification: added reverse complement
 
