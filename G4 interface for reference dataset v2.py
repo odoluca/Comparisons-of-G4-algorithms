@@ -14,7 +14,7 @@ def G4HScore(seq):
         GTract=False
         # print(i)
         while seq[i]=="G":
-            # region derivation from original algorithm: if prev is "C" apply bigger penalty
+            # region derivation from original algorithm: if prev is "C" apply bigger penalty. penalizes GCs
             try:
                 if seq[i-k]=="C":baseScore[-1]=-2
             except:
@@ -27,7 +27,7 @@ def G4HScore(seq):
             if i==len(seq): break
         if not GTract:
             while seq[i]=="C":
-                # region derivation from original algorithm: if prev is "G" apply bigger penalty
+                # region derivation from original algorithm: if prev is "G" apply bigger penalty. penalizes GCs
                 try:
                     if seq[i - k] == "G": baseScore[-1] = 2
                 except:
@@ -140,21 +140,26 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{2,} | (?P<mis
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))(((\w{1,7})|(?P<lloop>\w{1,20}))(?(mis)([G]{3,})|([G]{2,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))))((?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,20})))(?(mis)([G]{3,})|([G]{2,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))))((?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,20})))(?(mis)([G]{3,})|([G]{2,}|(?P<mis>([G]{2,}[AUTC][G]{1,}|[G]{1,}[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.837 precision 95.4% #I LIKE IT AND ITS LOGIC
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))(((\w{1,7})|(?P<ExtremeLoop>\w{1,20}))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,20})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,20})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.837 precision 95.4% #I LIKE IT AND ITS LOGIC
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))(((\w{1,7})|(?P<ExtremeLoop>\w{1,20}))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,30})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,20})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.864 precision 95.1% #I LIKE IT AND ITS LOGIC
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))(((\w{2,7})|(?P<ExtremeLoop>\w{1,20}))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{2,7}|(\w{2,7}|(?P<ExtremeLoop>\w{1,30})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{2,7}|(\w{2,7}|(?P<ExtremeLoop>\w{1,20})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.849 precision 95.1% #has too short limitation as well for loops
+
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{3,}|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+|[G]+[AUTC][G]+)))   ((\w{1,7})|(?P<ExtremeLoop>\w{1,20}))    (?(imperfectTract)([G]{3,})|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+|[G]+[AUTC][G]+)))   (?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,30})))  (?(imperfectTract)([G]{3,})|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+|[G]+[AUTC][G]+)))  (?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,30})))  (?(imperfectTract)([G]{3,})|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+|[G]+[AUTC][G]+)))"'
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{3,}|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+)))   ((\w{1,7})|(?P<ExtremeLoop>\w{1,20}))    (?(imperfectTract)([G]{3,})|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+)))   (?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,30})))  (?(imperfectTract)([G]{3,})|(?P<imperfectTract>([G]{2,}|[G]+[AUTC][G]+)))  (?(ExtremeLoop)\w{1,7}|(\w{1,7}|(?P<ExtremeLoop>\w{1,30})))  (?(imperfectTract)([G]{2,})|(?P<imperfectTract>([G]{3,}|[G]+[AUTC][G]+)))"'
+
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))(((\w{2,7})|(?P<ExtremeLoop>\w{1,20}))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{2,7}|(\w{2,7}|(?P<ExtremeLoop>\w{1,30})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))((?(ExtremeLoop)\w{2,7}|(\w{2,7}|(?P<ExtremeLoop>\w{1,20})))(?(imperfectTract)([G]{3,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]+|[G]+[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.849 precision 95.1% #has too short limitation as well for loops
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]{3,}|[G]{3,}[AUTC][G]{2,})))(((\w{0,5})|(?P<ExtremeLoop>\w{1,35}))(?(imperfectTract)([G]{2,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]{3,}|[G]{3,}[AUTC][G]{2,})))))((?(ExtremeLoop)\w{2,7}|(\w{0,5}|(?P<ExtremeLoop>\w{1,35})))(?(imperfectTract)([G]{2,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]{3,}|[G]{3,}[AUTC][G]{2,})))))((?(ExtremeLoop)\w{0,5}|(\w{0,5}|(?P<ExtremeLoop>\w{1,35})))(?(imperfectTract)([G]{2,})|([G]{2,}|(?P<imperfectTract>([G]{2,}[AUTC][G]{3,}|[G]{3,}[AUTC][G]{2,})))))"' #status for reference dataset: MCC:0.850 #FOUND BY genetic algorithm
 
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))(((\w{1,7})|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))((?(ExtremeLoop)\w{1,7}|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))((?(ExtremeLoop)\w{1,7}|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))"' #status for reference dataset: MCC:0.820
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))(((\w{2,7})|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))((?(ExtremeLoop)\w{2,7}|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))((?(ExtremeLoop)\w{2,7}|(?P<ExtremeLoop>\w{1,30}))(?(ImperfectTract)[G]{2,}|([G]{2,}|(?P<ImperfectTract>([G]{1,}[AUTC][G]{1,})))))"' #status for reference dataset: MCC:0.820 #has too short limitation as well for loops
 
 # quadparserCommand = 'python quadparserModified.v3.py -r "([gG]{2,}\w{1,12}){3,}[gG]{2,}"'# status for reference dataset: MCC:0.667, precision 94.2%
-
 # quadparserCommand = 'python G4-predictorModified.py -w 20 -s 1.1 '  #
+
 starttime=time.time()
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 
 
 print(time.time()-starttime)
 
-G4HScoreTreshold=0.#473
+G4HScoreTreshold=0.473
 TP=0
 FP=0
 G4List=[]

@@ -1,3 +1,11 @@
+    quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{'+str(ilong)+',} | (?P<imperfectTract>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))(((\w{'+str(mloop-iloop)+','+str(mloop)+'})|(?P<ExtremeLoop>\w{1,'+str(eloop)+'}))(?(imperfectTract)([G]{'+str(ifull)+',})|([G]{'+str(ifull)+',}|(?P<imperfectTract>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))))((?(ExtremeLoop)\w{'+str(mloop-iloop)+','+str(mloop)+'}|(\w{'+str(mloop-iloop)+','+str(mloop)+'}|(?P<ExtremeLoop>\w{1,'+str(eloop)+'})))(?(imperfectTract)([G]{'+str(ifull)+',})|([G]{'+str(ilong)+',}|(?P<imperfectTract>([G]{'+str(ifull)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))))((?(ExtremeLoop)\w{'+str(mloop-iloop)+','+str(mloop)+'}|(\w{'+str(mloop-iloop)+','+str(mloop)+'}|(?P<ExtremeLoop>\w{1,'+str(eloop)+'})))(?(imperfectTract)([G]{'+str(ifull)+',})|([G]{'+str(ilong)+',}|(?P<imperfectTract>([G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})))))"'  # status for reference dataset: MCC:0.849 precision 95.1% #has too short limitation as well for loopsa
+ (ifull, ishort, ilong, iloop, mfull, mshort, mlong, mloop, eloop, efull, elong, eshort)=tuple(parametersList[:12])
+RESULTS:
+most succesful MCC: 0.850294356595
+[2, 3, 2, 5, 3, 3, 3, 5, 35, 1, 2, 3, 9]
+[2, 3, 2, 5, 1, 3, 2, 5, 40, 2, 1, 2, 5]
+
+
     quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "( [G]{'+str(ifull)+',} | (?P<mis>[G]{'+str(ilong)+',}[AUTC][G]{'+str(ishort)+',}|[G]{'+str(ishort)+',}[AUTC][G]{'+str(ilong)+',})) (\w{1,'+str(iloop)+'}  (?(mis)[G]{'+str(mfull)+',}| ([G]{'+str(mfull)+',}|(?P<mis>[G]{'+str(mlong)+',}[AUTC][G]{'+str(mshort)+',}|[G]{'+str(mshort)+',}[AUTC][G]{'+str(mlong)+',})) )) (\w{1,'+str(mloop)+'}  (?(mis)[G]{'+str(mfull)+',}| ([G]{'+str(mfull)+',}|(?P<mis>[G]{'+str(mlong)+',}[AUTC][G]{'+str(eshort)+',}|[G]{'+str(mshort)+',}[AUTC][G]{'+str(mlong)+',})) ))(\w{1,'+str(mloop)+'}  (?(mis)[G]{'+str(efull)+',}| ([G]{'+str(efull)+',}|(?P<mis>[G]{'+str(eshort)+',}[AUTC][G]{'+str(elong)+',}|[G]{'+str(elong)+',}[AUTC][G]{'+str(eshort)+',})) ))" ' #only perfect and buldged
 RESULTS:
 most succesful MCC: 0.871946049009
