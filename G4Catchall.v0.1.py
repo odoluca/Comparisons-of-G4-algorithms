@@ -204,7 +204,7 @@ if (not NoBulge) and (not NoMismatch):
 if not NoExtLoop:
     ExtremeLoop='(?P<ExtremeLoop>\w{'+MinExtLL+','+MaxExtLL+'})'
 
-finalRegex='([G]{'+MinG+',} | )
+finalRegex='([G]{'+MinG+',} | )'
 
 
 
