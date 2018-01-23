@@ -222,21 +222,24 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"' #status for reference dataset: MCC:0.857 precision 95.1%, TPR:0.98, FPR:0.16 >G4Hs>0.473> MCC:0.903, precision:98.0%, TPR:0.98, FPR:0.06
 
 
-#G2s are strict, G3 one bulge
+#G2s are strict but loops typical, G3 one bulge
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
 #status for reference dataset: MCC:0.857 precision 95.1%, TPR:0.98, FPR:0.16 >G4Hs>0.473> MCC:0.903, precision:98.0%, TPR:0.98, FPR:0.06
 
-#G2s are strict, G3 one bulge/mismatch
-# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp>[G]+[ATUC][G]+))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]+[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]+[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]+[ATUC][G]+))))"'
-#status for reference dataset: MCC:0.864 precision 95.1%, TPR:0.99, FPR:0.16 >G4Hs>0.473> MCC:0.909, precision:98.0%, TPR:0.98, FPR:0.06
 
-#G2s are strict, G3 two bulge/mismatch
-# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp1>[G]+[ATUC][G]+))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]+[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))"'
-#status for reference dataset: MCC:0.849 precision 94.5%, TPR:0.99, FPR:0.18 >G4Hs>0.473> MCC:0.895, precision:97.3%, TPR:0.98, FPR:0.09
 
-#G2s are strict, G3 two bulge
-# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))"'
+
+
+
+
+
+
+
+
+#G2s: YES but typical ONE extreme loop, G3s: ONE extreme loop TWO bulge
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))  ((\w{1,7})|(?P<lloop>\w{1,30}))                     (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))               (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))               (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))"'
 #status for reference dataset: MCC:0.864 precision 95.1%, TPR:0.99, FPR:0.16 >G4Hs>0.473> MCC:0.909, precision:98.0%, TPR:0.98, FPR:0.06
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2})|(?<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))   (?(shrt)\w{1,7}| ((\w{1,7})|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))   (?(shrt)\w{1,7}| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))              (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))  (?(shrt)\w{1,7}| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))          (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]{2,}|[G]{2,}[ATUC][G]+))))"'
 
 # #G2s are strict, G3 no bulge/mismatch (logic is similar to quadparser classic)
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2}))  ((\w{1,7})|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|[G]{3,})  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30})) (?(shrt)[G]{2,}|[G]{3,})  (?(lloop)\w{1,7}|(?P<lloop>\w{1,30}))  (?(shrt)[G]{2,}|[G]{3,})"'
@@ -247,6 +250,33 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>
 #status for reference dataset: MCC:0.560 precision 96.1%, TPR:0.74, FPR:0.10
 
 # quadparserCommand = 'python quadparserModified.v3.py -r "([gG]{3,}\w{1,7}){3,}[gG]{3,}"'# status for reference dataset: MCC:0.667, precision 94.2%
+
+
+
+
+
+#FINAL SETS ARE ADDED HERE
+
+# G2s: Typical (adjustable) loop, G3s: ONE extreme loop NO bulge/mismatch
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<shrt>[G]{2}))  (?(shrt)\w{1,7}| ((\w{1,7})|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|[G]{3,})  (?(shrt)\w{1,7}| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|[G]{3,})  (?(shrt)\w{1,7}| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|[G]{3,})"'
+# MCC:0.851 precision:95.7 TPR:0.973 FPR:0.138
+
+
+# G2s: Typical (adjustable) loop, G3s: ONE extreme loop ONE bulge/mismatch
+# Untested final version
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?<imp>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))  (?(shrt)\w{1,7}| ((\w{1,7})|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt)\w{1,7}| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt)\w{1,7}| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,]|(?P<imp>[G]{2}|[G]+[ATUC][G]+))))"'
+# MCC:0.865 precision:95.7 TPR:0.980 FPR:0.138
+
+
+# G2s: Typical (adjustable) loop, G3s: ONE extreme loop TWO bulge/mismatch
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?<imp1>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))  (?(shrt)\w{1,7}| ((\w{1,7})|(?P<lloop>\w{1,30})))   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]+[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))               (?(shrt)\w{1,7}| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))  (?(shrt)\w{1,7}| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]+[ATUC][G]+))))"'
+# MCC:0.850 precision:95.1 TPR:0.980 FPR:0.160 >G4Hs>0.473> MCC:0.895, precision:97.3%, TPR:0.98, FPR:0.09
+# Untested final version: mismatch is allowed at the edge aswell
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?<imp1>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))  (?(shrt)\w{1,7}| ((\w{1,7})|(?P<lloop>\w{1,30})))   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+))|([G]{3,]|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)))) (?(shrt)\w{1,7}| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt)\w{1,7}| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,]|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))"'
+# MCC:0.850 precision:94.5 TPR:0.987 FPR:0.181
+
+
+
 
 from numpy import arange
 parameter=None
@@ -268,7 +298,7 @@ for line in output.splitlines():
             if score>G4HScoreTreshold:
                 nonG4List.append(G4no)
                 FP+=1
-                # print line,score
+                print line,score
     elif line.__contains__("GQ_"):
         G4no=int(re.search(r"[0-9]+",line).group(0))
         if G4no not in G4List:
@@ -276,7 +306,7 @@ for line in output.splitlines():
             if score>G4HScoreTreshold:
                 G4List.append(G4no)
                 TP+=1
-                # print line,score
+                print line,score
 
 if TP==0 and FP==0: exit() #if nothing exists then exit without error.
 FN=298-TP
@@ -288,3 +318,4 @@ precision=float(TP)/(TP+FP)
 # print "precision:",precision*100,"%"
 # print  "TPR:",float(TP)/298,"FPR:",float(FP)/94
 print str(parameter)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94)
+print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
