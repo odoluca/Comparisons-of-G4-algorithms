@@ -388,9 +388,11 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>
 
 G2sAllowed=True
 ExtremeAllowed=True
-ExtremeAllowedForG2s=False
+ExtremeAllowedForG2s=True
+if not G2sAllowed:
+    ExtremeAllowedForG2s=False
 ImperfectTractsAllowed=1
-BulgedTractsOnly=False
+BulgedTractsOnly=True
 typLoopMax=str(7)
 extLoopMax=str(30)
 shrtLoopMax=str(4)
