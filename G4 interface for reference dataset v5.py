@@ -386,55 +386,77 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))"'
 # MCC:0.744 precision:96.7 TPR:0.893 FPR:0.096
 
+G2sAllowed=False
+ExtremeAllowed=False
+ExtremeAllowedForG2s=False
+ImperfectTractsAllowed=0
+BulgedTractsOnly=False
+typLoopMax=str(7)
+extLoopMax=str(30)
+shrtLoopMax=str(4)
+
 bulgeOnly="[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}"
 mismatch="[G]{2}|[G]+[ATUC][G]+"
-
-Dshrt='|(?P<shrt>[G]{2})'
-imp=mismatch
-Dimp1='|(?P<imp1>'+imp+')'
-Dimp2='|(?P<imp2>'+imp+')'
-
-Timp1='(?(imp1)([G]{3,}'+Dimp2+')|([G]{3,}'+Dimp1+'))'  #alternate is [G]{3,}
-Dext='|(?P<lloop>\w{1,30})'
-
-typLoop='((\w{1,7})'+Dext+')'
-shrtLoop='((\w{1,4})'+Dext+')|'
+Dimp1='?P<imp1>'
+Dimp2='?P<imp2>'
+imp='('+mismatch+')'
+if BulgedTractsOnly:
+    imp='('+bulgeOnly+')'
+Timp1='?(imp1)'
+Timp2='?(imp2)'
+shrt='\w{1,'+shrtLoopMax+'}'
 Tshrt='?(shrt)'
-shrtTract='[G]{2,}|'
-
-
+Dshrt='?P<shrt>[G]{2}'
+typ='\w{1,'+typLoopMax+'}'
+ext='\w{1,'+extLoopMax+'}'
+Dext='?P<lloop>'
 Text='?(lloop)'
 
-Tract1=' ([G]{3,}'+Dimp1+Dshrt+')'
-Loop1='   ('+Tshrt+shrtLoop+typLoop+')'
-Tract2='   ('+Tshrt+shrtTract+Timp1+')'
-Loop2=''
+# Construct Tract 1:
+Tract1='[G]{3,}'
+if ImperfectTractsAllowed>0: Tract1=Tract1+'|('+Dimp1+imp+')'
+if G2sAllowed: Tract1=Tract1+'|('+Dshrt+')'
 
-structure= Tract1+Loop1+Tract2+Loop2
+# Construct Loop 1:
+Loop1=typ
+if ExtremeAllowed:Loop1=Loop1+'|('+Dext+ext+')'
+if G2sAllowed:
+    shrtAdd = shrt
+    if ExtremeAllowedForG2s:
+        shrtAdd = shrtAdd + '|(' + Dext + ext+')'
+    Loop1 = Tshrt + '(' + shrtAdd + ')|('+Loop1+')'
+
+# Construct Tract 2:
+Tract2='[G]{3,}'
+if ImperfectTractsAllowed>1: Tract2=Tract2+'|('+Dimp2+imp+')'
+if ImperfectTractsAllowed>0: Tract2=Timp1+'('+Tract2+')|([G]{3,}|('+Dimp1+imp+'))'
+if G2sAllowed:
+    Tract2=Tshrt+'[G]{2,}|('+Tract2+')'
+
+# Construct Loop 2:
+Loop2=typ
+if ExtremeAllowed:
+    Loop2=Text+Loop2+'|('+typ+'|('+Dext+ext+'))'
+if G2sAllowed:
+    shrtAdd=shrt
+    if ExtremeAllowedForG2s:
+        shrtAdd = Text+ shrtAdd + '|('+shrt+'|(' + Dext + ext+'))'
+    Loop2=Tshrt+'('+shrtAdd+')|('+Loop2+')'
+
+# Construct Tract 3:
+Tract3='[G]{3,}'
+if ImperfectTractsAllowed>1:
+    Tract3=Timp2+Tract3+'|([G]{3,}|('+Dimp2+imp+'))'
+if ImperfectTractsAllowed>0:
+    Tract3=Timp1+'('+Tract3+')|([G]{3,}|('+Dimp1+imp+'))'
+if G2sAllowed:
+    Tract3=Tshrt+'[G]{2,}|('+Tract3+')'
+
+# Combine all regions:
+structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
 
 
-# imperfect1Tst='|(?(imp1)([G]{3,}'+imperfect2Def+'))|([G]{3,}'+imperfect1Def+')))'
-
-# extG3Def='|(?P<lloop>\w{1,30})'
-# extG2Def='|(?P<lloop>\w{1,30})'
-# extG3Tst='|(?(lloop)\w{1,7}|(\w{1,7}|'+extG3Def+'))'
-# extG2Tst='|(?(lloop)\w{1,7}|(\w{1,7}|'+extG2Def+'))'
-#
-# shrtTstLoop='?(shrt)(\w{1,4}'+extG2Def+')|'
-# shrtTstTrct='?(shrt)[G]{2,}'
-#
-#
-# firstTract=' ([G]{3,}'+imperfect1Def+shrtDef+')'
-# firstLoop='('+shrtTstLoop+'(\w{1,7}'+extG3Def+'))'
-#
-# secondTract='('+shrtTstTrct+imperfect1Tst+')'
-#
-# structure=firstTract+firstLoop+secondTract
-# (?(shrt)((\w{1, 7}) | (?P < lloop > \w{1, 30})) | ((\w{1, 7}) | (?P < lloop > \w{1, 30})))
-#structure=" ([G]{3,}|(?P<imp>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})|(?P<shrt>[G]{2}))  (?(shrt)((\w{1,4})|(?P<lloop>\w{1,30}))| ((\w{1,7})|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)(?(lloop)(\w{1,4})|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)(?(lloop)(\w{1,4})|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)(\w{1,7})|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))"
-# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))   (?(shrt)((\w{1,4})|(?P<lloop>\w{1,30}))| ((\w{1,7})|(?P<lloop>\w{1,30})))   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+))|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)))) (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))"'
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))   (?(shrt)((\w{1,4})|(?P<lloop>\w{1,30}))| ((\w{1,7})|(?P<lloop>\w{1,30})))   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+))|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)))) (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))"'
-
 print(quadparserCommand[39:])
 quadparserCommand=quadparserCommand[:40]+structure+'"'
 print(quadparserCommand[39:])
@@ -448,7 +470,7 @@ print "parameter\tMCC\tTPR\tFPR"
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 # print output
 
-G4HScoreTreshold=10.#473
+G4HScoreTreshold=0.#473
 TP=0
 FP=0
 G4List=[]
