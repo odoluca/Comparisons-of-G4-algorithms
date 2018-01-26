@@ -47,6 +47,13 @@ arguments will be printed.
 '''
                     )
 
+# parser.add_argument('--output', '-o',
+#                     type=str,
+# help='''Name of the output file. If not used, the program prints on screen.
+#
+# '''
+#                     )
+
 parser.add_argument('--no_G2s','-s',
 action='store_true',
 help="""G-quadruplexes with G-tracts of two guanines (G2s) are not allowed.
@@ -174,7 +181,8 @@ Low G4Hunter scores can be eliminated using --G4HThreshold argument.
 parser.add_argument('--G4HThreshold',
 type=float,
 help="""Used with --G4HunterScores. Removes G-quadruplex predictions 
-with lower scores than the given threshold value. 
+with lower scores than the given threshold value. If used, --G4HunterScores 
+usage is not necessary.
 
 """)
 
@@ -222,7 +230,7 @@ max_G4H_score=4
 G2sAllowed=True
 ExtremeAllowed=True
 ExtremeAllowedForG2s=True
-if not G2sAllowed:
+if not G2sAllowed or not ExtremeAllowed:
     ExtremeAllowedForG2s=False
 ImperfectTractsAllowed=1
 BulgedTractsOnly=False
@@ -236,6 +244,8 @@ shrtLoopMin=str(1)
 InclFlanks=False
 MergeOverlapping=True
 NoReverse=False
+
+if args.G4HThreshold is not None: args.G4HunterScores=True
 
 " ------------------------------[ Parse Arguments ]--------------------------------- "
 
@@ -373,18 +383,17 @@ https://doi.org/10.1093/nar/gkw006
 
 def G4HScore(seq,minRepeat=2,penalizeGC=True):
     i=0
-    # baseScore=[0]*len(seq)
     baseScore=[]
     while i<len(seq):
         tractScore=[0]
         k=1
         GTract=False
-        # print(i)
         while seq[i]=="G":
-            tractScore=[(min(k-minRepeat+1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
+            tractScore=[(min(k-1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
             # region derivation from original algorithm: if prev is "C" apply bigger penalty. penalizes GCs
             if penalizeGC:
                 try:
+                    pass
                     if seq[i-k]=="C":baseScore[-1]=-2
                 except:
                     pass
@@ -395,10 +404,11 @@ def G4HScore(seq,minRepeat=2,penalizeGC=True):
             if i==len(seq): break
         if not GTract:
             while seq[i]=="C":
-                tractScore=[max(-k+minRepeat-1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
+                tractScore=[max(-k+1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
                 # region derivation from original algorithm: if prev is "G" apply bigger penalty. penalizes GCs
                 if penalizeGC:
                     try:
+                        pass
                         if seq[i - k] == "G": baseScore[-1] = 2
                     except:
                         pass
@@ -459,7 +469,7 @@ while True:
             orj=gquad_list[-1]
             new_seq=orj[5]+m.group(0)[orj[2]-m.start():]
             gquad_list[-1]=[chr, orj[1], m.end(), m.end()-orj[1], '+', new_seq,
-                            new_seq,G4HScore(m.group(0),2,True)]
+                            new_seq,G4HScore(new_seq,2,True)]
         else:
             gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '+', m.group(0),
                              m.group(0),G4HScore(m.group(0),2,True)])  # modification: added sequence again
@@ -470,10 +480,10 @@ while True:
                 orj = gquad_list[-1]
                 new_seq = orj[5] + m.group(0)[orj[2] - m.start():]
                 gquad_list[-1] = [chr, orj[1], m.end(), m.end() - orj[1], '-', new_seq,
-                                  ReverseComplement(new_seq),G4HScore(ReverseComplement(m.group(0)),2,True)]
+                                  ReverseComplement(new_seq),G4HScore(new_seq,2,True)]
             else:
                 gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '-', m.group(0),
-                                   ReverseComplement(m.group(0)), G4HScore(ReverseComplement(m.group(0)),2,True)])  # modification: added reverse complement
+                                   ReverseComplement(m.group(0)), G4HScore(m.group(0),2,True)])  # modification: added reverse complement
 
 
     chr = re.sub('^>', '', line)
@@ -483,6 +493,8 @@ while True:
         break
 
 gquad_sorted = sort_table(gquad_list, (0, 1, 2, 3))
+
+
 
 for line in gquad_sorted:
     line = '\t'.join([str(x) for x in line])
