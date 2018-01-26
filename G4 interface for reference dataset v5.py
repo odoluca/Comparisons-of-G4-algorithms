@@ -4,7 +4,7 @@ import time, math
 import re
 
 
-def G4HScore(seq):
+def G4HScore(seq,minRepeat=2,penalizeGC=True):
     i=0
     # baseScore=[0]*len(seq)
     baseScore=[]
@@ -14,12 +14,13 @@ def G4HScore(seq):
         GTract=False
         # print(i)
         while seq[i]=="G":
-            tractScore=[(min(k-1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
+            tractScore=[(min(k-minRepeat+1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
             # region derivation from original algorithm: if prev is "C" apply bigger penalty. penalizes GCs
-            try:
-                if seq[i-k]=="C":baseScore[-1]=-2
-            except:
-                pass
+            if penalizeGC:
+                try:
+                    if seq[i-k]=="C":baseScore[-1]=-2
+                except:
+                    pass
             # endregion
             k+=1
             i+=1
@@ -27,12 +28,13 @@ def G4HScore(seq):
             if i==len(seq): break
         if not GTract:
             while seq[i]=="C":
-                tractScore=[max(-k+1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
+                tractScore=[max(-k+minRepeat-1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
                 # region derivation from original algorithm: if prev is "G" apply bigger penalty. penalizes GCs
-                try:
-                    if seq[i - k] == "G": baseScore[-1] = 2
-                except:
-                    pass
+                if penalizeGC:
+                    try:
+                        if seq[i - k] == "G": baseScore[-1] = 2
+                    except:
+                        pass
                 # endregion
                 k+=1
                 i+=1
@@ -47,6 +49,10 @@ def G4HScore(seq):
     return float(Score)/len(seq)
 
 # print G4HScore("GGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG")
+
+def G4HAlter(seq):
+    allGGs=re.findall('GG',seq)
+    allGGsCount=allGGs.__len__()
 
 
 file="Mitochondria_NC_012920_1.fasta"

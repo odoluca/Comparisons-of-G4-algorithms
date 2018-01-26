@@ -12,9 +12,6 @@ parser=argparse.ArgumentParser(
         filters through G4Hunter-like secondary scoring scheme and return a bed file with 
         coordinates of the match, matched sequence, G-quadruplex forming sequence and the score.
         
-        the defult regex is 
-        
-        
         Output bed file has the following columns:
         1. description of the fasta sequence (e.g. NC_00024.11 Y chromosome)
         2. start of the match
@@ -30,24 +27,24 @@ parser=argparse.ArgumentParser(
         echo '>mychr' > /tmp/mychr.fa
         echo 'TTGGGTTGGGACTGGGTACGGGAATA' >> /tmp/mychr.fa
         
-        G4Catchall.py -f /tmp/mychr.fa 
+        G4Catchall.py -f /tmp/mychr.fa --G4HunterScores
             mychr   2   22  20  +   GGGTTGGGACTGGGTACGGG    GGGTTGGGACTGGGTACGGG    2.11
 
         G4Catchall.py -f /tmp/mychr.fa --min_G-tract 4
             
     DOWNLOAD
-        G4Catchall.p is hosted at 
+        G4Catchall.py is hosted at 
 
 """,
     formatter_class=argparse.RawTextHelpFormatter)
 
 parser.add_argument('--fasta', '-f',
                     type=str,
-                    help='''Input file in fasta format containing one or more
-sequences. Use '-' to get the name of the file from stdin
+help='''Input file in fasta format containing one or more sequences can be used.
+Please note that, if not used, only the regular expression constructed using 
+arguments will be printed. 
 
-                   ''',
-                    # required=True
+'''
                     )
 
 parser.add_argument('--no_G2s','-s',
@@ -89,22 +86,22 @@ G2s, use --min_short_loop and --max_loop_length, respectively.
 
 parser.add_argument('--no_mismatch','-M',
 action='store_true',
-help="""By default the program allows a maximum of one G-tract with one
-mismatch. If used, only bulged imperfect G-tracts are allowed. 
+help="""By default the program allows a maximum of one G-tract with one mismatch.
+If used, only bulged imperfect G-tracts are allowed. 
 
 """)
 
 parser.add_argument('--max_G2_loop_length',
 type=str,
-help="""Allows to set the maximum typical loop length for G-quadruplexes 
-with G-tracts of two guanines (G2s). default=4
+help="""Allows to set the maximum typical loop length for G-quadruplexes with
+G-tracts of two guanines (G2s). default=4
 
 """, default="4")
 
 parser.add_argument('--min_G2_loop_length',
 type=str,
-help="""Allows to set the minimum typical loop length for G-quadruplexes 
-with G-tracts of two guanines (G2s). default=1 
+help="""Allows to set the minimum typical loop length for G-quadruplexes with 
+G-tracts of two guanines (G2s). default=1 
 default=1
 
 """, default="1")
@@ -141,17 +138,17 @@ default=30
 
 parser.add_argument('--no_reverse','-R',
 action='store_true',
-help="""By default the program searches both strands by 
-reversing the regex. If used only + strand is searched for matches.
+help="""By default the program searches both strands by reversing the regex. 
+If used only + strand is searched for matches.
 
 """)
 
 parser.add_argument('--dont_merge_overlapping',
 action='store_true',
-help="""Putative G-quadruplex-forming sequences may be found 
-overlapping on the same strand. By default the program merges 
-these sequences. If used, these are not overlapped. Using may 
-result in huge number of matches and cause memory issues.
+help="""Putative G-quadruplex-forming sequences may be found overlapping 
+on the same strand. By default the program merges these sequences. If 
+used, these are not overlapped. Using may result in huge number of 
+matches and cause memory issues.
 
 """)
 
@@ -159,10 +156,25 @@ parser.add_argument('--include_flanks','-l',
 action='store_true',
 help="""By default the program extracts only matching sequences. 
 If used flanking nucleotides are also included in the search. 
-Please note if used G-quadruplex-forming sequences at the beginning
-or ending of the sequences may be missed. Consider adding "N" to the 
-edges of the sequence if G-quadruplex forming sequences are expected 
-to be found at the very edge of the target sequence.
+Please note if used G-quadruplex-forming sequences at the beginning or 
+ending of the sequences may be missed. Consider adding "N" to the edges 
+of the sequence if G-quadruplex forming sequences are expected to be 
+found at the very edge of the target sequence.
+
+""")
+
+parser.add_argument('--G4HunterScores','-g',
+action='store_true',
+help="""By default the program extracts only matching sequences. If 
+used, discovered sequences are evaluated based on G4Hunter algorithm.
+Low G4Hunter scores can be eliminated using --G4HThreshold argument. 
+
+""")
+
+parser.add_argument('--G4HThreshold',
+type=float,
+help="""Used with --G4HunterScores. Removes G-quadruplex predictions 
+with lower scores than the given threshold value. 
 
 """)
 
@@ -246,11 +258,7 @@ if args.include_flanks: InclFlanks=True
 if args.dont_merge_overlapping: MergeOverlapping=False
 if args.no_reverse: NoReverse=True
 
-if args.fasta == '-':
-    args.fasta = sys.stdin.readlines()
-    if len(args.fasta) > 1:
-        sys.exit('\nquadpareser.py: Only one input file at a time can be processed:\n--fasta/-f: %s\n' % (args.fasta))
-    args.fasta = args.fasta[0].strip()
+
 
 " ------------------------------[  Define RegEx  ]--------------------------------- "
 
@@ -316,6 +324,13 @@ if G2sAllowed:
 reg=r'('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
 if InclFlanks: reg=r'\w'+reg+r'\w'
 
+
+"""if no fasta is used, only return the regex and exit"""
+
+if args.fasta is None:
+    print reg
+    exit()
+
 """ Reverse forward match """
 intab = 'actguACTGU'
 outtab = 'tgacaTGACA'
@@ -326,7 +341,19 @@ if args.no_reverse is False:
 else:
     regrev = ''
 
+
+
 " ------------------------------[ End of Define RegEx ]--------------------------------- "
+
+
+" ------------------------------[ Check Fasta ]--------------------------------- "
+
+if args.fasta == '-':
+    args.fasta = sys.stdin.readlines()
+    if len(args.fasta) > 1:
+        sys.exit('\nquadpareser.py: Only one input file at a time can be processed:\n--fasta/-f: %s\n' % (args.fasta))
+    args.fasta = args.fasta[0].strip()
+" ------------------------------[ End of Check Fasta ]--------------------------------- "
 
 
 " ------------------------------[ Functions ]--------------------------------- "
@@ -337,7 +364,56 @@ def ReverseComplement(seq):
     seq_dict = {seq1[i]: seq1[i + 5] for i in range(20) if i < 5 or 10 <= i < 15}
     return "".join([seq_dict[base] for base in reversed(seq)])
 
+"""                               G4Hunter
+Modified code to score the discovered sequences based on G4Hunter algorithm. 
+see Amina Bedrat, Laurent Lacroix, Jean-Louis Mergny; Re-evaluation of G-quadruplex propensity
+ with G4Hunter, Nucleic Acids Research, Volume 44, Issue 4, 29 February 2016, Pages 1746-1759,
+https://doi.org/10.1093/nar/gkw006
+"""
 
+def G4HScore(seq,minRepeat=2,penalizeGC=True):
+    i=0
+    # baseScore=[0]*len(seq)
+    baseScore=[]
+    while i<len(seq):
+        tractScore=[0]
+        k=1
+        GTract=False
+        # print(i)
+        while seq[i]=="G":
+            tractScore=[(min(k-minRepeat+1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
+            # region derivation from original algorithm: if prev is "C" apply bigger penalty. penalizes GCs
+            if penalizeGC:
+                try:
+                    if seq[i-k]=="C":baseScore[-1]=-2
+                except:
+                    pass
+            # endregion
+            k+=1
+            i+=1
+            GTract=True
+            if i==len(seq): break
+        if not GTract:
+            while seq[i]=="C":
+                tractScore=[max(-k+minRepeat-1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
+                # region derivation from original algorithm: if prev is "G" apply bigger penalty. penalizes GCs
+                if penalizeGC:
+                    try:
+                        if seq[i - k] == "G": baseScore[-1] = 2
+                    except:
+                        pass
+                # endregion
+                k+=1
+                i+=1
+                GTract=True
+                if i == len(seq): break
+        baseScore=baseScore.__add__(tractScore)
+        if not GTract: i += 1
+        # print baseScore
+    Score=0
+    for value in baseScore:
+        Score+=value
+    return float(Score)/len(seq)
 
 """                               LIST SORTER
 Code to sort list of lists
@@ -377,35 +453,27 @@ while True:
         if line == '':
             break
     ref_seq = ''.join(ref_seq)
-    for m in psq_re_f.finditer(ref_seq,overlapped=MergeOverlapping):
+    for m in psq_re_f.finditer(ref_seq,overlapped=True):
         #region: merge if overlapping with previous:
-        # if len(gquad_list)>0:
-        #    print "+",len(gquad_list),(m.start()<=gquad_list[-1][2]), (chr==gquad_list[-1][0]),m.group(0)
-        #endregion
-        if (len(gquad_list)>0) and gquad_list[-1][4]=="+" and (m.start()<=gquad_list[-1][2]) and (chr==gquad_list[-1][0]):
+        if MergeOverlapping and (len(gquad_list)>0) and gquad_list[-1][4]=="+" and (m.start()<=gquad_list[-1][2]) and (chr==gquad_list[-1][0]):
             orj=gquad_list[-1]
             new_seq=orj[5]+m.group(0)[orj[2]-m.start():]
             gquad_list[-1]=[chr, orj[1], m.end(), m.end()-orj[1], '+', new_seq,
-                            new_seq]
+                            new_seq,G4HScore(m.group(0),2,True)]
         else:
-            #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_for' #id is no longer used
             gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '+', m.group(0),
-                             m.group(0)])  # modification: added sequence again
+                             m.group(0),G4HScore(m.group(0),2,True)])  # modification: added sequence again
     if args.no_reverse is False:
-        for m in psq_re_r.finditer(ref_seq,overlapped=MergeOverlapping):
+        for m in psq_re_r.finditer(ref_seq,overlapped=True):
             # region: merge if overlapping with previous:
-            # if len(gquad_list) > 0:
-            #    print "-", len(gquad_list), (gquad_list[-1][4]=="-"),(m.start() <= gquad_list[-1][2]), (chr == gquad_list[-1][0]),m.group(0),m.start(),gquad_list[-1][2],(chr == gquad_list[-1][0])
-            #endregion
-            if (len(gquad_list) > 0) and gquad_list[-1][4]=="-" and (m.start() <= gquad_list[-1][2]) and (chr == gquad_list[-1][0]):
+            if MergeOverlapping and (len(gquad_list) > 0) and gquad_list[-1][4]=="-" and (m.start() <= gquad_list[-1][2]) and (chr == gquad_list[-1][0]):
                 orj = gquad_list[-1]
                 new_seq = orj[5] + m.group(0)[orj[2] - m.start():]
                 gquad_list[-1] = [chr, orj[1], m.end(), m.end() - orj[1], '-', new_seq,
-                                  ReverseComplement(new_seq)]
+                                  ReverseComplement(new_seq),G4HScore(ReverseComplement(m.group(0)),2,True)]
             else:
-                #quad_id = str(chr) + '_' + str(m.start()) + '_' + str(m.end()) + '_rev' #id is no longer used
                 gquad_list.append([chr, m.start(), m.end(), len(m.group(0)), '-', m.group(0),
-                                   ReverseComplement(m.group(0))])  # modification: added reverse complement
+                                   ReverseComplement(m.group(0)), G4HScore(ReverseComplement(m.group(0)),2,True)])  # modification: added reverse complement
 
 
     chr = re.sub('^>', '', line)
