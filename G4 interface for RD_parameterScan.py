@@ -56,7 +56,7 @@ file="testedG4s_4.fa"
 file="testedG4s3.fa"
 # file="empty.fa"
 
-def ConstructRegex(typLoopMax=7,extLoopMax=30,shrtLoopMax=4):
+def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
     G2sAllowed=True
     ExtremeAllowed=False
     ExtremeAllowedForG2s=False

@@ -386,12 +386,15 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>
 
 # G2s: adjustable, G3s: NO extreme loop, ONE bulge
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
+                                                structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
+
 # MCC:0.734 precision:96.7 TPR:0.886 FPR:0.096
 
 # G2s: adjustable, G3s: NO extreme loop, TWO bulge
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
 # MCC:0.749 precision:96.7 TPR:0.896 FPR:0.096
 
+#region set regex
 G2sAllowed=True
 ExtremeAllowed=True
 ExtremeAllowedForG2s=True
@@ -462,15 +465,10 @@ if G2sAllowed:
 
 # Combine all regions:
 structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
+#endregion
 
-
-# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)|(?P<shrt>[G]{2}))   (?(shrt)((\w{1,4})|(?P<lloop>\w{1,30}))| ((\w{1,7})|(?P<lloop>\w{1,30})))   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+))|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+)))) (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30}))))  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))  (?(shrt) (?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))| (?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}|[G]+[ATUC][G]+)) )|([G]{3,}|(?P<imp1>[G]{2}|[G]+[ATUC][G]+))))"'
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))   (\w{1,7})   (?(imp1)([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))   (\w{1,7})  (?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))) )|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))   (\w{1,7})  (?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))) )|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30}|(?P<lloop>\w{1,4}))|(\w{1,7}|(?P<lloop>\w{1,4})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,30}|(\w{1,30}|(?P<lloop>\w{1,4})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,4})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,30}|(\w{1,30}|(?P<lloop>\w{1,4})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,4})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))"'
-print(quadparserCommand[39:])
-# quadparserCommand=quadparserCommand[:40]+structure+'"'
-print(quadparserCommand[39:])
-
+structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
+quadparserCommand=quadparserCommand[:40]+structure+'"'
 
 
 from numpy import arange
