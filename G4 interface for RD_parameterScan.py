@@ -58,8 +58,8 @@ file="testedG4s3.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
     G2sAllowed=True
-    ExtremeAllowed=False
-    ExtremeAllowedForG2s=False
+    ExtremeAllowed=True
+    ExtremeAllowedForG2s=True
     if not G2sAllowed or not ExtremeAllowed:
         ExtremeAllowedForG2s=False
     ImperfectTractsAllowed=1
