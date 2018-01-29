@@ -59,11 +59,11 @@ file="testedG4s3.fa"
 def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
     G2sAllowed=True
     ExtremeAllowed=True
-    ExtremeAllowedForG2s=True
+    ExtremeAllowedForG2s=False
     if not G2sAllowed or not ExtremeAllowed:
         ExtremeAllowedForG2s=False
-    ImperfectTractsAllowed=1
-    BulgedTractsOnly=True
+    ImperfectTractsAllowed=2
+    BulgedTractsOnly=False
     typLoopMax=str(typLoopMax)
     extLoopMax=str(extLoopMax)
     shrtLoopMax=str(shrtLoopMax)
