@@ -193,9 +193,10 @@ class Soft(object):
         figure.savefig(repert+'Score_plot.pdf', dpi=figure.dpi)
 
     # modification: reverse complement function.
-    def ReverseComplement(self,seq):
-        seq1 = 'ATCGNTAGCNatcgntagcn'
-        seq_dict = {seq1[i]: seq1[i + 5] for i in range(20) if i < 5 or 10 <= i < 15}
+    def ReverseComplement(seq):
+        seq1 = 'ATCGNWSMKRYBDHVatcgnwsmkrybdhv'
+        seq2 = 'TAGCNWSKMYRVHDBtagcnwskmyrvhdb'
+        seq_dict = {seq1[i]: seq2[i] for i in range(len(seq1))}
         return "".join([seq_dict[base] for base in reversed(seq)])
 
     """ 
