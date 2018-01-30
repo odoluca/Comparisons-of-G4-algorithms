@@ -52,6 +52,8 @@ def G4HScore(seq):
 file="Mitochondria_NC_012920_1.fasta"
 file="test 1.fa"
 file="testedG4s_4.fa"
+file="testedG4s_5.fa"
+
 # file="test 12fa"
 file="testedG4s3.fa"
 # file="empty.fa"
@@ -140,15 +142,15 @@ from numpy import arange, random
 # for iteration in range(1000):
 def iterate(queue):
 
-    for iteration in range(100):
+    for iteration in range(20):
         # print(iteration)
         # print(parameter)
         # typLoopMax=random.randint(1,15)
         # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
         # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
-        window='25'#str(random.randint(15,30))
-        treshold=str(random.uniform(1.0,2))
-        quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
+        window='20'#str(random.randint(15,30))
+        treshold=  str(random.uniform(0.5,2.0))
+        quadparserCommand = 'python G4HunterModified.v2.py -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
 
         # quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax) + '"'
         output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
@@ -176,8 +178,8 @@ def iterate(queue):
                         # print line,score
 
         if TP==0 and FP==0: exit() #if nothing exists then exit without error.
-        # FN=71-TP
-        # TN=138-FP
+        # FN=134-TP
+        # TN=75-FP
         FN = 298 - TP
         TN = 94 - FP
         # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
@@ -191,14 +193,15 @@ def iterate(queue):
         # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
         # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
         queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
-
+        # print "here",
 import multiprocessing
 
 if __name__=="__main__":
     print(ConstructRegex(7,4,30))
     jobs=[]
     queue=multiprocessing.Queue()
-    for i in range(2):
+
+    for i in range(30):
         p=multiprocessing.Process(target=iterate,args=(queue,))
         jobs.append(p)
         p.start()
