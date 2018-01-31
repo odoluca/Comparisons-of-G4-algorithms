@@ -103,28 +103,31 @@ class Soft(object):
         while ( item < len(line)):
             #a la fin d une sequence il est possible d avoir des GGG dans se cas
             # on verifie si la secore+1<len(line) car il ya un deuxieme G 
-            #et 
+            #et
+
             if (item < len(line) and (line[item]=="G" or line[item]=="g")):
-                liste.append(1)
+                liste.append(0)
                 #print liste
+                if (item + 1 < len(line) and (line[item + 1] == "C" or line[item + 1] == "c")):
+                    liste[-1]+=-2
                 if(item+1< len(line) and (line[item+1]=="G" or line[item+1]=="g")):
-                    liste[item]=2
-                    liste.append(2)
+                    liste[item]=1
+                    liste.append(1)
                     if (item+2< len(line) and (line[item+2]=="G" or line[item+2]=="g")):
-                        liste[item+1]=3
-                        liste[item]=3
-                        liste.append(3)
+                        liste[item+1]=2
+                        liste[item]=2
+                        liste.append(2)
                         if (item+3< len(line) and (line[item+3]=="G" or line[item+3]=="g")):
-                            liste[item]=4
-                            liste[item+1]=4
-                            liste[item+2]=4
-                            liste.append(4)
+                            liste[item]=3
+                            liste[item+1]=3
+                            liste[item+2]=3
+                            liste.append(3)
                             item=item+1
                         item=item+1
                     item=item+1
                 item=item+1
                 while(item < len(line) and (line[item]=="G" or line[item]=="g")):
-                        liste.append(4)
+                        liste.append(3)
                         item=item+1
         
             elif (item < len(line) and (line[item]=="T" or line[item]=="A"  or line[item]=="t" or line[item]=="a" or line[item]=="U"or line[item]=="u" or
@@ -136,25 +139,27 @@ class Soft(object):
                 item=item+1
                 
             elif(item < len(line) and (line[item]=="C" or line[item]=="c")):
-                liste.append(-1)
+                liste.append(-0)
+                if (item + 1 < len(line) and (line[item + 1] == "G" or line[item + 1] == "g")):
+                    liste[-1]+=2
                 if(item+1< len(line) and (line[item+1]=="C" or line[item+1]=="c" )):
-                    liste[item]=-2
+                    liste[item]=-1
                     liste.append(-2)
                     if (item+2< len(line) and (line[item+2]=="C" or line[item+2]=="c" )):
-                        liste[item+1]=-3
-                        liste[item]=-3
-                        liste.append(-3)
+                        liste[item+1]=-2
+                        liste[item]=-2
+                        liste.append(-2)
                         if (item+3< len(line) and (line[item+3]=="C" or line[item+3]=="c"  )):
-                            liste[item]=-4
-                            liste[item+1]=-4
-                            liste[item+2]=-4
-                            liste.append(-4)
+                            liste[item]=-3
+                            liste[item+1]=-3
+                            liste[item+2]=-3
+                            liste.append(-3)
                             item=item+1
                         item=item+1   
                     item=item+1
                 item=item+1
                 while(item < len(line) and (line[item]=="C" or line[item]=="c")):
-                    liste.append(-4)
+                    liste.append(-3)
                     item=item+1
             
             else:
@@ -194,8 +199,8 @@ class Soft(object):
 
     # modification: reverse complement function.
     def ReverseComplement(self,seq):
-        seq1 = 'ATUCGNWSMKRYBDHVatucgnwsmkrybdhv'
-        seq2 = 'TAAGCNWSKMYRVHDBtaagcnwskmyrvhdb'
+        seq1 = 'ATCGNWSMKRYBDHVatcgnwsmkrybdhv'
+        seq2 = 'TAGCNWSKMYRVHDBtagcnwskmyrvhdb'
         seq_dict = {seq1[i]: seq2[i] for i in range(len(seq1))}
         return "".join([seq_dict[base] for base in reversed(seq)])
 
@@ -241,7 +246,6 @@ class Soft(object):
                 c=LISTE[i+1] 
             I=I+1
             seq=line[a:a+F+k+1]
-            print "this:",seq
             sequence,liste2=self.BaseScore(seq)
             self.Write( a, k ,F,1, seq ,len(seq) , round(np.mean(liste2),2),header,"", noreverse)
             MSCORE.append(abs(round(np.mean(liste2),2)))

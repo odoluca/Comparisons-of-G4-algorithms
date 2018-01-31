@@ -142,18 +142,22 @@ from numpy import arange, random
 # for iteration in range(1000):
 def iterate(queue):
 
-    for iteration in range(20):
+    for iteration in range(30,450):
         # print(iteration)
         # print(parameter)
         # typLoopMax=random.randint(1,15)
         # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
         # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
-        window='20'#str(random.randint(15,30))
-        treshold=  str(random.uniform(0.5,2.0))
+        window='25'#str(random.randint(15,30))
+        # treshold=  str(random.uniform(0.8,2.0))
+        treshold=str(float(iteration)/100)
         quadparserCommand = 'python G4HunterModified.v2.py -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
 
         # quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax) + '"'
-        output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
+        try:
+            output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
+        except:
+            continue
         G4HScoreTreshold=0.#473
         TP=0
         FP=0
@@ -201,7 +205,9 @@ if __name__=="__main__":
     jobs=[]
     queue=multiprocessing.Queue()
 
-    for i in range(30):
+
+
+    for i in range(1):
         p=multiprocessing.Process(target=iterate,args=(queue,))
         jobs.append(p)
         p.start()
