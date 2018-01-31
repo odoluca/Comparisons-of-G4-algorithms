@@ -59,8 +59,8 @@ file="testedG4s3.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoopMin=1,extLoopMin=1):
     G2sAllowed=True
-    ExtremeAllowed=True
-    ExtremeAllowedForG2s=True
+    ExtremeAllowed=False
+    ExtremeAllowedForG2s=False
     ImperfectTractsAllowed=1
     BulgedTractsOnly=True
     typLoopMax=str(typLoopMax)
@@ -198,11 +198,12 @@ def iterate(args):
     # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
     if len(args)==3:
         # report= str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94)
-        report= (typLoopMax,shrtLoopMax,extLoopMax,MCC,float(TP)/298,float(FP)/94)
+        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94}
+
 
     elif len(args)==6:
         # report= str(typLoopMax) + "\t" + str(shrtLoopMax) + "\t" + str(extLoopMax) + "\t" + str(typLoopMin) + "\t" + str(shrtLoopMin) + "\t" + str(extLoopMin) + "\t" +  str(MCC) + "\t" + str(float(TP) / 298) + "\t" + str(float(FP) / 94)
-        report = (typLoopMax,shrtLoopMax,extLoopMax,typLoopMin, shrtLoopMin,extLoopMin,MCC,float(TP) / 298,float(FP) / 94,)
+        report = {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94,"typLoopMin":typLoopMin, "shrtLoopMin":shrtLoopMin,"shrtLoopMin":extLoopMin}
 
     # print report
     # print itertools.cycle([r'-',r'\\',r'|',r'/'])
@@ -221,16 +222,25 @@ if __name__=="__main__":
 
     results=p.map(iterate,allParams )
 
+    """THIS CODE FINDS THE HITS THAT HAS THE BEST TPR FOR EACH FPR"""
+
     BestTpls = {}
-    for tpl in results:
-        print "\t".join([str(e) for e in list(tpl)])
+    for hit in results:
+        if hit['FPR'] not in BestTpls.keys():
+            BestTpls.update({hit['FPR']:[hit]})
+        else:
+            if BestTpls[hit['FPR']][0]['TPR']==hit['TPR']:
+                BestTpls[hit['FPR']].append(hit)
+            elif BestTpls[hit['FPR']][0]['TPR']<hit['TPR']:
+                BestTpls[hit['FPR']]=[hit]
 
 
+    for key, hitList in BestTpls.iteritems():
+        for hit in hitList:
+            print "\t".join([str(hit["typLoopMax"]),str(hit["shrtLoopMax"]),str(hit["extLoopMax"]),str(hit["MCC"]),str(hit["TPR"]),str(hit["FPR"])])
 
-    # BestTpls={}
-    # for tpl in results:
-    #     if tpl[4] is not in BestTpls.keys():
-    #         BestTpls.update()
+    """END"""
+
 
 
 

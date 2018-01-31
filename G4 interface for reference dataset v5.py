@@ -398,13 +398,13 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[
 G2sAllowed=True
 ExtremeAllowed=True
 ExtremeAllowedForG2s=True
-if not G2sAllowed:
-    ExtremeAllowedForG2s=False
-ImperfectTractsAllowed=2
+ImperfectTractsAllowed=1
 BulgedTractsOnly=True
-typLoopMax=str(7)
-extLoopMax=str(30)
-shrtLoopMax=str(2)
+if not G2sAllowed or not ExtremeAllowed:
+    ExtremeAllowedForG2s = False
+typLoopMax=str(15)
+extLoopMax=str(1)
+shrtLoopMax=str(1)
 
 bulgeOnly="[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}"
 mismatch="[G]{2,}|[G]+[ATUC][G]+"
@@ -469,7 +469,7 @@ structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+
 print(structure)
 # structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
 # structure='([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,2})|(\w{1,7}|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+)))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))))) (?(shrt)(\w{1,2})|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+))))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))))) (?(shrt)(\w{1,2})|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+))))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+)))))'
-structure ='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,2}|  (?P<lloop>(?(imp2)\w(1,7)|\w{1,30})))|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))  ))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))' #Scans for extreme loop only if no imperfection is noted
+# structure ='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,2}|  (?P<lloop>(?(imp2)\w(1,7)|\w{1,30})))|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))  ))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))' #Scans for extreme loop only if no imperfection is noted
 
 quadparserCommand=quadparserCommand[:40]+structure+'"'
 
