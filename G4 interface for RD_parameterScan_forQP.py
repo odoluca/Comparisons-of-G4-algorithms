@@ -4,7 +4,6 @@ import time, math
 import re
 
 
-
 def G4HScore(seq):
     i=0
     # baseScore=[0]*len(seq)
@@ -53,24 +52,23 @@ def G4HScore(seq):
 file="Mitochondria_NC_012920_1.fasta"
 file="test 1.fa"
 file="testedG4s_4.fa"
+file="testedG4s_5.fa"
+
 # file="test 12fa"
 file="testedG4s3.fa"
 # file="empty.fa"
 
-def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoopMin=1,extLoopMin=1):
+def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
     G2sAllowed=True
     ExtremeAllowed=False
     ExtremeAllowedForG2s=False
+    if not G2sAllowed or not ExtremeAllowed:
+        ExtremeAllowedForG2s=False
     ImperfectTractsAllowed=1
     BulgedTractsOnly=True
     typLoopMax=str(typLoopMax)
     extLoopMax=str(extLoopMax)
     shrtLoopMax=str(shrtLoopMax)
-    typLoopMin = str(typLoopMin)
-    extLoopMin = str(extLoopMin)
-    shrtLoopMin = str(shrtLoopMin)
-    if not G2sAllowed or not ExtremeAllowed:
-        ExtremeAllowedForG2s=False
 
     bulgeOnly="[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}"
     mismatch="[G]{2,}|[G]+[ATUC][G]+"
@@ -81,11 +79,11 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoo
         imp='('+bulgeOnly+')'
     Timp1='?(imp1)'
     Timp2='?(imp2)'
-    shrt='\w{'+shrtLoopMin+','+shrtLoopMax+'}'
+    shrt='\w{1,'+shrtLoopMax+'}'
     Tshrt='?(shrt)'
     Dshrt='?P<shrt>[G]{2}'
-    typ='\w{'+typLoopMin+','+typLoopMax+'}'
-    ext='\w{'+extLoopMin+','+extLoopMax+'}'
+    typ='\w{1,'+typLoopMax+'}'
+    ext='\w{1,'+extLoopMax+'}'
     Dext='?P<lloop>'
     Text='?(lloop)'
 
@@ -142,107 +140,82 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>
 from numpy import arange, random
 
 # for iteration in range(1000):
-def iterate(args):
+def iterate(queue):
 
-    typLoopMax=7
-    shrtLoopMax=2
-    extLoopMax=30
-    typLoopMin=1
-    shrtLoopMin=1
-    extLoopMin=1
+    for iteration in range(1,31):
+        # print(iteration)
+        # print(parameter)
+        # typLoopMax=random.randint(1,15)
+        # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
+        # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
+        window='20'#str(random.randint(15,30))
+        # treshold=  str(random.uniform(0.8,2.0))
+        treshold=str(float(iteration)/100)
+        quadparserCommand = 'python G4HunterModified.v2.py -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
 
-    if len(args)==3:
-        typLoopMax, shrtLoopMax, extLoopMax=args
-    elif len(args)==6:
-        typLoopMax, shrtLoopMax, extLoopMax, typLoopMin, shrtLoopMin, extLoopMin=args
+        loop=str(iteration)
+        
+        quadparserCommand = 'python quadparserModified.v3.py --noreverse -r "([gG]{3,}\w{1,'+loop+'}){3,}[gG]{3,}"'  # status for reference dataset: MCC:0.667, precision 94.2%
 
-    quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax,typLoopMin,shrtLoopMin,extLoopMin) + '"'
-    output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
-    G4HScoreTreshold=0.#473
-    TP=0
-    FP=0
-    G4List=[]
-    nonG4List=[]
-    for line in output.splitlines():
-        if line.__contains__("not GQ_"):
-            G4no=int(re.search(r"[0-9]+",line).group(0))
-            if G4no not in G4List:
-                score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                if abs(score)>=G4HScoreTreshold:
-                    G4List.append(G4no)
-                    FP+=1
-                    # print line,score
-        elif line.__contains__("GQ_"):
-            G4no=int(re.search(r"[0-9]+",line).group(0))
-            if G4no not in nonG4List:
-                score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                if abs(score)>=G4HScoreTreshold:
-                    nonG4List.append(G4no)
-                    TP+=1
-                    # print line,score
+        # quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax) + '"'
+        try:
+            output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
+        except:
+            continue
+        G4HScoreTreshold=0.#473
+        TP=0
+        FP=0
+        G4List=[]
+        nonG4List=[]
+        for line in output.splitlines():
+            if line.__contains__("not GQ_"):
+                G4no=int(re.search(r"[0-9]+",line).group(0))
+                if G4no not in G4List:
+                    score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
+                    if abs(score)>G4HScoreTreshold:
+                        G4List.append(G4no)
+                        FP+=1
+                        # print line,score
+            elif line.__contains__("GQ_"):
+                G4no=int(re.search(r"[0-9]+",line).group(0))
+                if G4no not in nonG4List:
+                    score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
+                    if abs(score)>G4HScoreTreshold:
+                        nonG4List.append(G4no)
+                        TP+=1
+                        # print line,score
 
-    if TP==0 and FP==0: exit() #if nothing exists then exit without error.
-    # FN=71-TP
-    # TN=138-FP
-    FN = 298 - TP
-    TN = 94 - FP
-    # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
-    MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
-    # print "MCC:",MCC
-    precision=float(TP)/(TP+FP)
-    # print "precision:",precision*100,"%"
-    # print  "TPR:", float(TP) / 298, "FPR:", float(FP) / 94
-    # if float(TP)/298>0.8 and float(FP)/94<0.14:
-    # print str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94) #,quadparserCommand
-    # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
-    # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
-    if len(args)==3:
-        # report= str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94)
-        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94}
-
-
-    elif len(args)==6:
-        # report= str(typLoopMax) + "\t" + str(shrtLoopMax) + "\t" + str(extLoopMax) + "\t" + str(typLoopMin) + "\t" + str(shrtLoopMin) + "\t" + str(extLoopMin) + "\t" +  str(MCC) + "\t" + str(float(TP) / 298) + "\t" + str(float(FP) / 94)
-        report = {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94,"typLoopMin":typLoopMin, "shrtLoopMin":shrtLoopMin,"shrtLoopMin":extLoopMin}
-
-    # print report
-    # print itertools.cycle([r'-',r'\\',r'|',r'/'])
-    return report
-
+        if TP==0 and FP==0: exit() #if nothing exists then exit without error.
+        # FN=134-TP
+        # TN=75-FP
+        FN = 298 - TP
+        TN = 94 - FP
+        # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
+        MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
+        # print "MCC:",MCC
+        precision=float(TP)/(TP+FP)
+        # print "precision:",precision*100,"%"
+        # print  "TPR:", float(TP) / 298, "FPR:", float(FP) / 94
+        # if float(TP)/298>0.8 and float(FP)/94<0.14:
+        # print str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94) #,quadparserCommand
+        # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
+        # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
+        queue.put(window+"\t"+loop+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
+        # print "here",
 import multiprocessing
-import itertools
 
 if __name__=="__main__":
-    print("sample regex:")
     print(ConstructRegex(7,4,30))
-
-    p=multiprocessing.Pool(30)
-
-    allParams=list(itertools.product(*[[t for t in range(1,16)],[s for s in range(1,16)],[e for e in range(1,46)]]))
-
-    results=p.map(iterate,allParams )
-
-    """THIS CODE FINDS THE HITS THAT HAS THE BEST TPR FOR EACH FPR"""
-
-    BestTpls = {}
-    for hit in results:
-        if hit==None: continue
-        if hit['FPR'] not in BestTpls.keys():
-            BestTpls.update({hit['FPR']:[hit]})
-        else:
-            if BestTpls[hit['FPR']][0]['TPR']==hit['TPR']:
-                BestTpls[hit['FPR']].append(hit)
-            elif BestTpls[hit['FPR']][0]['TPR']<hit['TPR']:
-                BestTpls[hit['FPR']]=[hit]
-
-
-    for key, hitList in BestTpls.iteritems():
-        for hit in hitList:
-            print "\t".join([str(hit["typLoopMax"]),str(hit["shrtLoopMax"]),str(hit["extLoopMax"]),str(hit["MCC"]),str(hit["TPR"]),str(hit["FPR"])])
-
-    """END"""
+    jobs=[]
+    queue=multiprocessing.Queue()
 
 
 
+    for i in range(1):
+        p=multiprocessing.Process(target=iterate,args=(queue,))
+        jobs.append(p)
+        p.start()
 
-
+    while True:
+        print(queue.get())
+        time.sleep(0.01)

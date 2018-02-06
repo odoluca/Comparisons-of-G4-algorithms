@@ -4,7 +4,7 @@ import time, math
 import re
 
 
-def G4HScore(seq,minRepeat=2,penalizeGC=True):
+def G4HScoreMod(seq,minRepeat=2,penalizeGC=True):
     i=0
     # baseScore=[0]*len(seq)
     baseScore=[]
@@ -50,9 +50,35 @@ def G4HScore(seq,minRepeat=2,penalizeGC=True):
 
 # print G4HScore("GGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGGCGG")
 
-def G4HAlter(seq):
-    allGGs=re.findall('GG',seq)
-    allGGsCount=allGGs.__len__()
+def G4HScore(seq):
+    i = 0
+    # baseScore=[0]*len(seq)
+    baseScore = []
+    while i < len(seq):
+        tractScore = [0]
+        k = 1
+        GTract = False
+        # print(i)
+        while seq[i] == "G":
+            tractScore = [(min(k ,4))] * k  # derivation from original algorithm: tractScore=[min(k-1,16)]*k
+            k += 1
+            i += 1
+            GTract = True
+            if i == len(seq): break
+        if not GTract:
+            while seq[i] == "C":
+                tractScore = [max(-k , -4)] * k  # derivation from original algorithm: tractScore=[max(-k,-16)]*k
+                k += 1
+                i += 1
+                GTract = True
+                if i == len(seq): break
+        baseScore = baseScore.__add__(tractScore)
+        if not GTract: i += 1
+        # print baseScore
+    Score = 0
+    for value in baseScore:
+        Score += value
+    return float(Score) / len(seq)
 
 
 file="Mitochondria_NC_012920_1.fasta"
@@ -386,7 +412,7 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>
 
 # G2s: adjustable, G3s: NO extreme loop, ONE bulge
 quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp)[G]{3,}|([G]{3,}|(?P<imp>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
-                                                # structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
+#                                                structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
 
 # MCC:0.734 precision:96.7 TPR:0.886 FPR:0.096
 
@@ -466,11 +492,8 @@ if G2sAllowed:
 # Combine all regions:
 structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
 #endregion
-print(structure)
-# structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
-# structure='([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,2})|(\w{1,7}|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+)))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))))) (?(shrt)(\w{1,2})|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+))))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+))))) (?(shrt)(\w{1,2})|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}|[G]+[ATUC][G]+))))|([G]{3,}|(?P<imp1>([G]{2,}|[G]+[ATUC][G]+)))))'
-# structure ='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,2}|  (?P<lloop>(?(imp2)\w(1,7)|\w{1,30})))|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))  ))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,2}|(\w{1,2}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>(?(imp2)\w(1,7)|\w{1,30}))))) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))' #Scans for extreme loop only if no imperfection is noted
 
+#structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
 quadparserCommand=quadparserCommand[:40]+structure+'"'
 
 
@@ -478,10 +501,12 @@ from numpy import arange
 parameter=None
 print "parameter\tMCC\tTPR\tFPR"
 # print(parameter)
+quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w 20 -s 1.2 '  # status for reference dataset: MCC:0.764, precision 94.6%
+
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 # print output
 
-G4HScoreTreshold=0.#473
+G4HScoreTreshold=0#473
 TP=0
 FP=0
 G4List=[]

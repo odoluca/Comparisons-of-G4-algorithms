@@ -148,10 +148,11 @@ def iterate(queue):
         # typLoopMax=random.randint(1,15)
         # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
         # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
-        window='25'#str(random.randint(15,30))
+        window='20'#str(random.randint(15,30))
         # treshold=  str(random.uniform(0.8,2.0))
         treshold=str(float(iteration)/100)
-        quadparserCommand = 'python G4HunterModified.v2.py -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
+        quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
+
 
         # quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax) + '"'
         try:
