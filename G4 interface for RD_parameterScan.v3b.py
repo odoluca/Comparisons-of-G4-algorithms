@@ -56,13 +56,12 @@ file="testedG4s_4.fa"
 # file="test 12fa"
 file="testedG4s3.fa"
 # file="empty.fa"
-# file="testedG4s_5.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoopMin=1,extLoopMin=1):
     G2sAllowed=True
-    ExtremeAllowed=True
+    ExtremeAllowed=False
     ExtremeAllowedForG2s=False
-    ImperfectTractsAllowed=2
+    ImperfectTractsAllowed=1
     BulgedTractsOnly=True
     typLoopMax=str(typLoopMax)
     extLoopMax=str(extLoopMax)
@@ -72,7 +71,7 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoo
     shrtLoopMin = str(shrtLoopMin)
     if not G2sAllowed or not ExtremeAllowed:
         ExtremeAllowedForG2s=False
-    #region regex construct
+
     bulgeOnly="[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}"
     mismatch="[G]{2,}|[G]+[ATUC][G]+"
     Dimp1='?P<imp1>'
@@ -132,11 +131,15 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoo
 
     # Combine all regions:
     structure=r'('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
-    # print(structure)
     return structure
-    #endregion
 
 
+
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))"'
+                     # python ImGQfinder.v2.py --noreverse -r "([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,4}|(?P<lloop>\w{1,30}))|(\w{1,7}|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))"
+
+
+from numpy import arange, random
 
 # for iteration in range(1000):
 def iterate(args):
@@ -154,11 +157,8 @@ def iterate(args):
         typLoopMax, shrtLoopMax, extLoopMax, typLoopMin, shrtLoopMin, extLoopMin=args
 
     quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax,typLoopMin,shrtLoopMin,extLoopMin) + '"'
-
     output = subprocess.check_output(quadparserCommand + ' -f "' + file + '"', shell=True)
-
-    # print(output)
-    G4HScoreTreshold=0.473#473
+    G4HScoreTreshold=0.#473
     TP=0
     FP=0
     G4List=[]
@@ -168,7 +168,7 @@ def iterate(args):
             G4no=int(re.search(r"[0-9]+",line).group(0))
             if G4no not in G4List:
                 score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                if abs(score)>=G4HScoreTreshold:
+                if abs(score)>G4HScoreTreshold:
                     G4List.append(G4no)
                     FP+=1
                     # print line,score
@@ -176,7 +176,7 @@ def iterate(args):
             G4no=int(re.search(r"[0-9]+",line).group(0))
             if G4no not in nonG4List:
                 score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                if abs(score)>=G4HScoreTreshold:
+                if abs(score)>G4HScoreTreshold:
                     nonG4List.append(G4no)
                     TP+=1
                     # print line,score
@@ -205,6 +205,8 @@ def iterate(args):
         # report= str(typLoopMax) + "\t" + str(shrtLoopMax) + "\t" + str(extLoopMax) + "\t" + str(typLoopMin) + "\t" + str(shrtLoopMin) + "\t" + str(extLoopMin) + "\t" +  str(MCC) + "\t" + str(float(TP) / 298) + "\t" + str(float(FP) / 94)
         report = {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94,"typLoopMin":typLoopMin, "shrtLoopMin":shrtLoopMin,"shrtLoopMin":extLoopMin}
 
+    # print report
+    # print itertools.cycle([r'-',r'\\',r'|',r'/'])
     return report
 
 import multiprocessing
@@ -214,36 +216,57 @@ if __name__=="__main__":
     print("sample regex:")
     print(ConstructRegex(7,4,30))
 
-
     p=multiprocessing.Pool(30)
 
-    allParams=list(itertools.product(*[[t for t in range(1,16)],[s for s in range(1,16)],[e for e in range(15,45)]]))
+    allParams=list(itertools.product(*[[t for t in range(1,16)],[s for s in range(1,16)],[e for e in range(1,46)]]))
 
     results=p.map(iterate,allParams )
 
-
-    for hit in results:
-        print "\t".join([str(hit["typLoopMax"]),str(hit["shrtLoopMax"]),str(hit["extLoopMax"]),str(hit["MCC"]),str(hit["TPR"]),str(hit["FPR"])])
-
     """THIS CODE FINDS THE HITS THAT HAS THE BEST TPR FOR EACH FPR"""
-    #
-    # BestTpls = {}
-    # for hit in results:
-    #     if hit==None: continue
-    #     if hit['FPR'] not in BestTpls.keys():
-    #         BestTpls.update({hit['FPR']:[hit]})
-    #     elif hit['FPR'] in BestTpls.keys():
-    #         if BestTpls[hit['FPR']][0]['TPR']==hit['TPR']:
-    #             BestTpls[hit['FPR']].append(hit)
-    #         elif BestTpls[hit['FPR']][0]['TPR']<hit['TPR']:
-    #             BestTpls[hit['FPR']]=[hit]
-    #
-    #
+
+    BestTpls = {}
+    for hit in results:
+        if hit['FPR'] not in BestTpls.keys():
+            BestTpls.update({hit['FPR']:[hit]})
+        else:
+            if BestTpls[hit['FPR']][0]['TPR']==hit['TPR']:
+                BestTpls[hit['FPR']].append(hit)
+            elif BestTpls[hit['FPR']][0]['TPR']<hit['TPR']:
+                BestTpls[hit['FPR']]=[hit]
+
+    TPRList=[]
+    FPRList=[]
+    for key, hitList in BestTpls.iteritems():
+        if hitList[0]['TPR'] not in TPRList:
+            TPRList.append(hitList[0]['TPR'])
+            FPRList.append(hitList[0]['FPR'])
+
+    print TPRList
+    print FPRList
+
+    newTPRList=[]
+    newFPRList=[]
+    for i in range(len(TPRList)):
+        for j in range(len(TPRList)):
+            Suitable=True
+            if TPRList[i]<TPRList[j] and FPRList[i]>FPRList[j]:
+                Suitable=False
+        if Suitable:
+            newTPRList.append(TPRList[i])
+            newFPRList.append(FPRList[i])
+    TPRList=newTPRList
+    FPRList=newFPRList
+
+    print TPRList
+    print FPRList
+
+
     # for key, hitList in BestTpls.iteritems():
     #     for hit in hitList:
     #         print "\t".join([str(hit["typLoopMax"]),str(hit["shrtLoopMax"]),str(hit["extLoopMax"]),str(hit["MCC"]),str(hit["TPR"]),str(hit["FPR"])])
 
     """END"""
+
 
 
 

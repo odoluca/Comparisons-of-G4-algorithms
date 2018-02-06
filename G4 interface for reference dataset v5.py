@@ -86,6 +86,8 @@ file="test 1.fa"
 file="testedG4s3.fa"
 # file="empty.fa"
 
+
+#region quadparser tests
 quadparserCommand = 'python quadparserModified.v3.py ' #shell command for quadparser command. Can add new regex pAUTtern: -r "\w{1}([gG]{3}\w{1,7}){3,}[gG]{3}\w{1}" # status for reference dataset: MCC:0.249, precision 98.6%
 quadparserCommand = 'python quadparserModified.v3.py -r "([gG]{2,}\w{1,7}){3,}[gG]{2,}"'# status for reference dataset: MCC:0.667, precision 94.2%
 # quadparserCommand = 'python ImGQfinder.v2.py ' #shell command for perfect, buldged or mismAUTched sequences
@@ -419,19 +421,21 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[
 # G2s: adjustable, G3s: NO extreme loop, TWO bulge
 # quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})) )|([G]{3,}|(?P<imp1>[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))"'
 # MCC:0.749 precision:96.7 TPR:0.896 FPR:0.096
+#endregion
 
 #region set regex
 G2sAllowed=True
 ExtremeAllowed=True
-ExtremeAllowedForG2s=True
-ImperfectTractsAllowed=1
+ExtremeAllowedForG2s=False
+ImperfectTractsAllowed=2
 BulgedTractsOnly=True
 if not G2sAllowed or not ExtremeAllowed:
     ExtremeAllowedForG2s = False
-typLoopMax=str(15)
-extLoopMax=str(1)
-shrtLoopMax=str(1)
+typLoopMax=str(11)
+extLoopMax=str(35)
+shrtLoopMax=str(7)
 
+#region construct regex
 bulgeOnly="[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}"
 mismatch="[G]{2,}|[G]+[ATUC][G]+"
 Dimp1='?P<imp1>'
@@ -492,8 +496,9 @@ if G2sAllowed:
 # Combine all regions:
 structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+Loop2+') ('+Tract3+')'
 #endregion
-
+#endregion
 #structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
+quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "'
 quadparserCommand=quadparserCommand[:40]+structure+'"'
 
 
@@ -501,12 +506,12 @@ from numpy import arange
 parameter=None
 print "parameter\tMCC\tTPR\tFPR"
 # print(parameter)
-quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w 20 -s 1.2 '  # status for reference dataset: MCC:0.764, precision 94.6%
+# quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w 20 -s 1.2 '  # status for reference dataset: MCC:0.764, precision 94.6%
 
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 # print output
 
-G4HScoreTreshold=0#473
+G4HScoreTreshold=0.#473
 TP=0
 FP=0
 G4List=[]
@@ -516,7 +521,7 @@ for line in output.splitlines():
         G4no=int(re.search(r"[0-9]+",line).group(0))
         if G4no not in nonG4List:
             score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-            if score>G4HScoreTreshold:
+            if abs(score)>=G4HScoreTreshold:
                 nonG4List.append(G4no)
                 FP+=1
                 print line,score
@@ -524,7 +529,7 @@ for line in output.splitlines():
         G4no=int(re.search(r"[0-9]+",line).group(0))
         if G4no not in G4List:
             score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-            if score>G4HScoreTreshold:
+            if abs(score)>=G4HScoreTreshold:
                 G4List.append(G4no)
                 TP+=1
                 print line,score

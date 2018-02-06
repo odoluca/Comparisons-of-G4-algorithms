@@ -170,7 +170,7 @@ found at the very edge of the target sequence.
 
 """)
 
-parser.add_argument('--G4HunterScores','-g',
+parser.add_argument('--G4HunterScores',
 action='store_true',
 help="""By default the program extracts only matching sequences. If 
 used, discovered sequences are evaluated based on G4Hunter algorithm.

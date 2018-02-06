@@ -55,7 +55,7 @@ file="testedG4s_4.fa"
 file="testedG4s_5.fa"
 
 # file="test 12fa"
-file="testedG4s3.fa"
+# file="testedG4s3.fa"
 # file="empty.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
@@ -185,8 +185,8 @@ def iterate(queue):
         if TP==0 and FP==0: exit() #if nothing exists then exit without error.
         # FN=134-TP
         # TN=75-FP
-        FN = 298 - TP
-        TN = 94 - FP
+        FN = 134 - TP
+        TN = 75 - FP
         # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
         MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
         # print "MCC:",MCC
@@ -197,7 +197,7 @@ def iterate(queue):
         # print str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94) #,quadparserCommand
         # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
         # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
-        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
+        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/134)+"\t"+str(float(FP)/75))
         # print "here",
 import multiprocessing
 
