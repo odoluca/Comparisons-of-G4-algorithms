@@ -85,6 +85,7 @@ file="Mitochondria_NC_012920_1.fasta"
 file="test 1.fa"
 file="testedG4s3.fa"
 # file="empty.fa"
+# file="testedG4s_UnNvsG.fa"
 
 
 #region quadparser tests
@@ -424,16 +425,16 @@ quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp>[
 #endregion
 
 #region set regex
-G2sAllowed=True
+G2sAllowed=False
 ExtremeAllowed=True
 ExtremeAllowedForG2s=False
 ImperfectTractsAllowed=2
 BulgedTractsOnly=True
 if not G2sAllowed or not ExtremeAllowed:
     ExtremeAllowedForG2s = False
-typLoopMax=str(11)
-extLoopMax=str(35)
-shrtLoopMax=str(7)
+typLoopMax=str(2)
+extLoopMax=str(31)
+shrtLoopMax=str(2)
 
 #region construct regex
 bulgeOnly="[G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}"
@@ -498,7 +499,7 @@ structure='('+Tract1+')  ('+Loop1+')  ('+ Tract2+') ('+Loop2+') ('+Tract3+') ('+
 #endregion
 #endregion
 #structure='([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,30})|(\w{1,7}))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(\w{1,30})|(\w{1,7})) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))'
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r "'
+quadparserCommand = 'python ImGQfinder.v2.py  -r "'
 quadparserCommand=quadparserCommand[:40]+structure+'"'
 
 
@@ -511,7 +512,7 @@ print "parameter\tMCC\tTPR\tFPR"
 output= subprocess.check_output(quadparserCommand + ' -f "' + file+'"', shell=True)
 # print output
 
-G4HScoreTreshold=0.#473
+G4HScoreTreshold=0#1.2#.473
 TP=0
 FP=0
 G4List=[]
@@ -521,7 +522,7 @@ for line in output.splitlines():
         G4no=int(re.search(r"[0-9]+",line).group(0))
         if G4no not in nonG4List:
             score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-            if abs(score)>=G4HScoreTreshold:
+            if abs(score)>G4HScoreTreshold:
                 nonG4List.append(G4no)
                 FP+=1
                 print line,score
@@ -529,7 +530,7 @@ for line in output.splitlines():
         G4no=int(re.search(r"[0-9]+",line).group(0))
         if G4no not in G4List:
             score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-            if abs(score)>=G4HScoreTreshold:
+            if abs(score)>G4HScoreTreshold:
                 G4List.append(G4no)
                 TP+=1
                 print line,score

@@ -15,12 +15,12 @@ def G4HScore(seq):
         # print(i)
         while seq[i]=="G":
             # region derivation from original algorithm: if prev is "C" apply bigger penalty. penalizes GCs
-            try:
-                if seq[i-k]=="C":baseScore[-1]=-2
-            except:
-                pass
+            # try:
+            #     if seq[i-k]=="C":baseScore[-1]=-2
+            # except:
+            #     pass
             # endregion
-            tractScore=[(min(k-1,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
+            tractScore=[(min(k,4))]*k #derivation from original algorithm: tractScore=[min(k-1,16)]*k
             k+=1
             i+=1
             GTract=True
@@ -28,12 +28,12 @@ def G4HScore(seq):
         if not GTract:
             while seq[i]=="C":
                 # region derivation from original algorithm: if prev is "G" apply bigger penalty. penalizes GCs
-                try:
-                    if seq[i - k] == "G": baseScore[-1] = 2
-                except:
-                    pass
+                # try:
+                #     if seq[i - k] == "G": baseScore[-1] = 2
+                # except:
+                #     pass
                 # endregion
-                tractScore=[max(-k+1,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
+                tractScore=[max(-k,-4)]*k #derivation from original algorithm: tractScore=[max(-k,-16)]*k
                 k+=1
                 i+=1
                 GTract=True
@@ -55,7 +55,7 @@ file="testedG4s_4.fa"
 file="testedG4s_5.fa"
 
 # file="test 12fa"
-# file="testedG4s3.fa"
+file="testedG4s3.fa"
 # file="empty.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
@@ -148,7 +148,7 @@ def iterate(queue):
         # typLoopMax=random.randint(1,15)
         # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
         # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
-        window='20'#str(random.randint(15,30))
+        window='25'#str(random.randint(15,30))
         # treshold=  str(random.uniform(0.8,2.0))
         treshold=str(float(iteration)/100)
         quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
@@ -169,24 +169,26 @@ def iterate(queue):
                 G4no=int(re.search(r"[0-9]+",line).group(0))
                 if G4no not in G4List:
                     score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                    if abs(score)>G4HScoreTreshold:
+                    if abs(score)>=G4HScoreTreshold:
                         G4List.append(G4no)
                         FP+=1
                         # print line,score
+                    # else: print line, score
             elif line.__contains__("GQ_"):
                 G4no=int(re.search(r"[0-9]+",line).group(0))
                 if G4no not in nonG4List:
                     score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
-                    if abs(score)>G4HScoreTreshold:
+                    if abs(score)>=G4HScoreTreshold:
                         nonG4List.append(G4no)
                         TP+=1
                         # print line,score
+                    # else: print line,score
 
         if TP==0 and FP==0: exit() #if nothing exists then exit without error.
         # FN=134-TP
         # TN=75-FP
-        FN = 134 - TP
-        TN = 75 - FP
+        FN = 298 - TP
+        TN = 94 - FP
         # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
         MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
         # print "MCC:",MCC
@@ -197,7 +199,7 @@ def iterate(queue):
         # print str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94) #,quadparserCommand
         # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
         # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
-        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/134)+"\t"+str(float(FP)/75))
+        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
         # print "here",
 import multiprocessing
 
