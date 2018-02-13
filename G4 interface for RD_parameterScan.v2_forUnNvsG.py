@@ -62,7 +62,7 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoo
     G2sAllowed=False
     ExtremeAllowed=True
     ExtremeAllowedForG2s=False
-    ImperfectTractsAllowed=2
+    ImperfectTractsAllowed=1
     BulgedTractsOnly=True
     typLoopMax=str(typLoopMax)
     extLoopMax=str(extLoopMax)

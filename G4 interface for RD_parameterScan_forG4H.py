@@ -57,6 +57,7 @@ file="testedG4s_5.fa"
 # file="test 12fa"
 file="testedG4s3.fa"
 # file="empty.fa"
+file="testedG4s_NvsUnG.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
     G2sAllowed=True
@@ -133,7 +134,7 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=4,extLoopMax=30):
 
 
 
-quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))"'
+# quadparserCommand = 'python ImGQfinder.v2.py --noreverse -r " ([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})|(?P<shrt>[G]{2}))  (?(shrt)\w{1,4}|\w{1,7})   (?(shrt)[G]{2,}|(?(imp1)([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})))) (?(shrt)\w{1,4}|\w{1,7})  (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))  (?(shrt)\w{1,4}|\w{1,7}) (?(shrt)[G]{2,}|(?(imp1)(?(imp2)[G]{3,}|([G]{3,}|(?P<imp2>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2})) )|([G]{3,}|(?P<imp1>[G]{2}[ATUC][G]+|[G]+[ATUC][G]{2}))))"'
                      # python ImGQfinder.v2.py --noreverse -r "([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))|(?P<shrt>[G]{2}))  (?(shrt)(\w{1,4}|(?P<lloop>\w{1,30}))|(\w{1,7}|(?P<lloop>\w{1,30})))  (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,}))))) (?(shrt)(?(lloop)\w{1,4}|(\w{1,4}|(?P<lloop>\w{1,30})))|(?(lloop)\w{1,7}|(\w{1,7}|(?P<lloop>\w{1,30})))) (?(shrt)[G]{2,}|(?(imp1)([G]{3,})|([G]{3,}|(?P<imp1>([G]{2,}[ATUC][G]+|[G]+[ATUC][G]{2,})))))"
 
 
@@ -148,10 +149,10 @@ def iterate(queue):
         # typLoopMax=random.randint(1,15)
         # shrtLoopMax=max(2,typLoopMax-random.randint(1,12))
         # extLoopMax=max(typLoopMax,typLoopMax+random.randint(1,40))
-        window='25'#str(random.randint(15,30))
+        window='20'#str(random.randint(15,30))
         # treshold=  str(random.uniform(0.8,2.0))
         treshold=str(float(iteration)/100)
-        quadparserCommand = 'python G4HunterModified.v2.py --noreverse -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
+        quadparserCommand = 'python G4HunterModified.v2.py -w '+window+' -s '+treshold  # status for reference dataset: MCC:0.812, precision 96.9%, TPR:0.94, FPR: 0.10
 
 
         # quadparserCommand = r'python ImGQfinder.v2.py --noreverse -r "' + ConstructRegex(typLoopMax,shrtLoopMax,extLoopMax) + '"'
@@ -187,8 +188,8 @@ def iterate(queue):
         if TP==0 and FP==0: exit() #if nothing exists then exit without error.
         # FN=134-TP
         # TN=75-FP
-        FN = 298 - TP
-        TN = 94 - FP
+        FN = 134 - TP
+        TN = 75 - FP
         # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
         MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
         # print "MCC:",MCC
@@ -199,7 +200,7 @@ def iterate(queue):
         # print str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94) #,quadparserCommand
         # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
         # queue.put(str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
-        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94))
+        queue.put(window+"\t"+treshold+"\t"+"\t"+str(MCC)+"\t"+str(float(TP)/134)+"\t"+str(float(FP)/75))
         # print "here",
 import multiprocessing
 

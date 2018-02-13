@@ -62,8 +62,8 @@ def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoo
     G2sAllowed=False
     ExtremeAllowed=True
     ExtremeAllowedForG2s=False
-    ImperfectTractsAllowed=2
-    BulgedTractsOnly=True
+    ImperfectTractsAllowed=1
+    BulgedTractsOnly=False
     typLoopMax=str(typLoopMax)
     extLoopMax=str(extLoopMax)
     shrtLoopMax=str(shrtLoopMax)
@@ -184,8 +184,8 @@ def iterate(args):
     if TP==0 and FP==0: exit() #if nothing exists then exit without error.
     # FN=71-TP
     # TN=138-FP
-    FN = 75 - TP
-    TN = 134 - FP
+    FN = 134 - TP
+    TN = 75 - FP
     # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
     MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
     # print "MCC:",MCC
@@ -198,7 +198,7 @@ def iterate(args):
     # print "MCC:%.3f precision:%.1f TPR:%.3f FPR:%.3f" % (MCC, precision*100,float(TP)/298,float(FP)/94)
     if len(args)==3:
         # report= str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94)
-        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/75,"FPR":float(FP)/134}
+        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/134,"FPR":float(FP)/75}
 
 
     elif len(args)==6:
