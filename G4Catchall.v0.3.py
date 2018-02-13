@@ -25,14 +25,19 @@ parser=argparse.ArgumentParser(
         
     EXAMPLE
         ##Test data:
-        echo '>mychr' > /tmp/mychr.fa
-        echo 'TTGGGTTGGGACTGGGTACGGGAATA' >> /tmp/mychr.fa
+        echo '>mychr' > /tmp/mychr.fa 
+        echo 'TTGGGTTGGGACTGGGTACGGGAATAAATAGGTTAGGAATGGATAGGAT' >> /tmp/mychr.fa
         
-        G4Catchall.py -f /tmp/mychr.fa --G4HunterScores
+        G4Catchall.py -f /tmp/mychr.fa --G3L 1..3 --G4H
             mychr   2   22  20  +   GGGTTGGGACTGGGTACGGG    GGGTTGGGACTGGGTACGGG    2.11
-
-        G4Catchall.py -f /tmp/mychr.fa --min_G-tract 4
             
+        G4Catchall.py -f /tmp/mychr.fa --G3L 1..3 --G2L 1..3
+            mychr   2   22  20  +   GGGTTGGGACTGGGTACGGG    GGGTTGGGACTGGGTACGGG
+            mychr   30  47  17  +   GGTTAGGAATGGATAGG   GGTTAGGAATGGATAGG
+        
+        G4Catchall.py -I 0
+            ([G]{3,})  (\w{1,8})  ([G]{3,}) (\w{1,8}) ([G]{3,}) (\w{1,8}) ([G]{3,})
+        
     DOWNLOAD
         G4Catchall.py is hosted at 
 
@@ -42,57 +47,66 @@ parser=argparse.ArgumentParser(
 parser.add_argument('--fasta', '-f',
                     type=str,
 help='''Input file in fasta format containing one or more sequences can be used.
-Please note that, if not used, only the regular expression constructed using 
+Please note that, if not used, only the regular expression constructed using given
 arguments will be printed. 
 
 '''
                     )
 
-# parser.add_argument('--output', '-o',
-#                     type=str,
-# help='''Name of the output file. If not used, the program prints on screen.
-#
-# '''
-#                     )
 
-parser.add_argument('--ExtremeLoopAllowed',
-action='store_true',
-help="""
-""", default=False)
 
-parser.add_argument('--minGtractForExtremeLoop','-E',
+parser.add_argument('--min_Gtract_for_extreme_loop','-E',
 type=int,
-help="""
+help="""Defines the minimum G-tract length for permission of an extreme 
+loop. Works only with --extreme_loop. Can be set to 2 or 3. Default=3
+
 """, default=3)
 
-parser.add_argument('--ExtremeLoop',
-type=str,
-help="""
-""", default='1..30')
+parser.add_argument('--extreme_loop','--XL',
+type=str,nargs='?',const='1..30',
+help="""Allows search for an extreme loop. If precedes a secondary argument,
+such as "1..20" also defines the limits of the loop. For default values do 
+not use a second argument. Default="1..30"
 
-parser.add_argument('--G2GQsAllowed',
-action='store_true',
-help="""
 """, default=False)
 
-parser.add_argument('--G2GQLoop',
-type=str,
-help="""
-""", default='1..2')
+parser.add_argument('--G2GQs_allowed',
+action='store_true',
+help="""Allows G-quadruplexes with G-tracts of two guanines. Not necessary
+with --G2GQ_loop command.
 
-parser.add_argument('--G3GQLoop',
+""", default=False)
+
+parser.add_argument('--G2GQ_loop','--G2L',
+type=str,nargs='?',const='1..2',
+help="""Allows G-quadruplexes with G-tracts of two guanines and defines 
+limits of loops for such G-quadruplexes if precedes a secondary argument,
+such as "1..7". Do not use a secondary argument for default loop limits.
+Default="1..2" 
+
+""", default=False)
+
+parser.add_argument('--G3GQ_loop','--G3L',
 type=str,
-help="""
+help="""Defines limits of loops for typical G-quadruplexes if precedes a 
+secondary argument, such as "1..7". Do not use for default loop limits.
+Default="1..8" 
+
 """, default='1..8')
 
-parser.add_argument('--maxImperfectGtracts','-I',
+parser.add_argument('--max_imperfect_Gtracts','-I',
 type=int,
-help="""
+help="""Defines the number of atypical or "imperfect" G-tracts allowed for
+G-quadruplexes with G-tracts of at least 3 guanines. It can be set to 0,1 
+or 2. Default=1
+
 """, default=1)
 
-parser.add_argument('--bulgeOnly','-B',
+parser.add_argument('--bulge_only','-B',
 action='store_true',
-help="""
+help="""Defines the nature of the imperfect G-tracts allowed. If used only
+bulged G-tracts are allowed. Otherwise, mismatches are also allowed.
+
 """, default=False)
 
 
@@ -206,7 +220,7 @@ matches and cause memory issues.
 
 """)
 
-parser.add_argument('--include_flanks','-l',
+parser.add_argument('--include_flanks','--F',
 action='store_true',
 help="""By default the program extracts only matching sequences. 
 If used flanking nucleotides are also included in the search. 
@@ -217,7 +231,7 @@ found at the very edge of the target sequence.
 
 """)
 
-parser.add_argument('--G4HunterScores',
+parser.add_argument('--G4H',
 action='store_true',
 help="""By default the program extracts only matching sequences. If 
 used, discovered sequences are evaluated based on G4Hunter algorithm.
@@ -227,9 +241,8 @@ Low G4Hunter scores can be eliminated using --G4HThreshold argument.
 
 parser.add_argument('--G4HThreshold',
 type=float,
-help="""Used with --G4HunterScores. Removes G-quadruplex predictions 
-with lower scores than the given threshold value. If used, --G4HunterScores 
-usage is not necessary.
+help="""Removes G-quadruplex predictions with lower scores than the preceding 
+threshold value. If used, --G4H usage is not necessary.
 
 """)
 
@@ -251,8 +264,6 @@ def ReverseComplement(seq):
 Code to sort list of lists
 see http://www.saltycrane.com/blog/2007/12/how-to-sort-table-by-columns-in-python/
 """
-import operator
-
 
 def sort_table(table, cols):
     """ sort a table by multiple columns
@@ -269,6 +280,8 @@ def sort_table(table, cols):
 
 
 " ------------------------------[ Parameters  ]--------------------------------- "
+
+" ------------------------------[ Parse Arguments ]--------------------------------- "
 
 G4H_scoring=False
 max_G4H_score=4
@@ -294,34 +307,33 @@ max_G4H_score=4
 
 if args.G4HThreshold is not None: args.G4HunterScores=True
 
-" ------------------------------[ Parse Arguments ]--------------------------------- "
-
-
-if args.G2GQsAllowed: G2sAllowed=True
-if args.G2GQLoop:
+G2sAllowed =False
+if args.G2GQs_allowed: G2sAllowed=True
+shrtLoopMin,shrtLoopMax='1','2'
+if args.G2GQ_loop:
     G2sAllowed = True
-shrtLoopMin,shrtLoopMax= args.G2GQLoop.split("..")
-# if args.G3GQLoop:
-typLoopMin,typLoopMax=args.G3GQLoop.split("..")
-
-ExtremeAllowed=args.ExtremeLoopAllowed
-if args.ExtremeLoop:
+    shrtLoopMin,shrtLoopMax= args.G2GQ_loop.split("..")
+typLoopMin,typLoopMax=args.G3GQ_loop.split("..")
+extLoopMin, extLoopMax = '1','30'
+ExtremeAllowed=False #args.extreme_loopAllowed
+ExtremeAllowedForG2s = False
+if args.extreme_loop:
     ExtremeAllowed=True
-extLoopMin,extLoopMax=args.ExtremeLoop.split("..")
-if args.minGtractForExtremeLoop==2:
-    ExtremeAllowed = True
+    extLoopMin,extLoopMax=args.extreme_loop.split("..")
+if args.min_Gtract_for_extreme_loop==2:
     ExtremeAllowedForG2s=True
-elif args.minGtractForExtremeLoop==3:
-    ExtremeAllowed = True
-ImperfectTractsAllowed=args.maxImperfectGtracts
-BulgedTractsOnly=args.bulgeOnly
+elif args.min_Gtract_for_extreme_loop==3:
+    ExtremeAllowedForG2s=False
+ImperfectTractsAllowed=args.max_imperfect_Gtracts
+BulgedTractsOnly=args.bulge_only
 
-ExtremeAllowedForG2s = True
+
 if not G2sAllowed or not ExtremeAllowed:
     ExtremeAllowedForG2s = False
 
 InclFlanks=args.include_flanks
 if args.dont_merge_overlapping: MergeOverlapping=False
+else: MergeOverlapping=True
 NoReverse=args.no_reverse
 
 
@@ -338,11 +350,11 @@ if BulgedTractsOnly:
     imp='('+bulgeOnly+')'
 Timp1='?(imp1)'
 Timp2='?(imp2)'
-shrt='\w{1,'+shrtLoopMax+'}'
+shrt='\w{'+shrtLoopMin+','+shrtLoopMax+'}'
 Tshrt='?(G2GQ)'
 Dshrt='?P<G2GQ>[G]{2}'
-typ='\w{1,'+typLoopMax+'}'
-ext='\w{1,'+extLoopMax+'}'
+typ='\w{'+typLoopMin+','+typLoopMax+'}'
+ext='\w{'+extLoopMin+','+extLoopMax+'}'
 Dext='?P<extLoop>'
 Text='?(extLoop)'
 
@@ -394,7 +406,6 @@ if InclFlanks: reg=r'\w'+reg+r'\w'
 """if no fasta is used, only return the regex and exit"""
 
 if args.fasta is None:
-    # print(ImperfectTractsAllowed)
     print (reg)
     exit()
 
@@ -522,7 +533,6 @@ while True:
             break
     ref_seq = ''.join(ref_seq)
     for m in psq_re_f.finditer(ref_seq,overlapped=True):
-        #region: merge if overlapping with previous:
         if MergeOverlapping and (len(gquad_list)>0) and gquad_list[-1][4]=="+" and (m.start()<=gquad_list[-1][2]) and (chr==gquad_list[-1][0]):
             orj=gquad_list[-1]
             new_seq=orj[5]+m.group(0)[orj[2]-m.start():]
@@ -538,7 +548,6 @@ while True:
                              m.group(0),G4HScore(m.group(0),2,True)])  # modification: added sequence again
     if args.no_reverse is False:
         for m in psq_re_r.finditer(ref_seq,overlapped=True):
-            # region: merge if overlapping with previous:
             if MergeOverlapping and (len(gquad_list) > 0) and gquad_list[-1][4]=="-" and (m.start() <= gquad_list[-1][2]) and (chr == gquad_list[-1][0]):
                 orj = gquad_list[-1]
                 new_seq = orj[5] + m.group(0)[orj[2] - m.start():]
