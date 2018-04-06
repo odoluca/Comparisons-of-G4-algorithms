@@ -60,8 +60,8 @@ file="testedG4s3.fa"
 # file="testedG4s_5.fa"
 
 def ConstructRegex(typLoopMax=7,shrtLoopMax=2,extLoopMax=30,typLoopMin=1,shrtLoopMin=1,extLoopMin=1):
-    G2sAllowed=False
-    ExtremeAllowed=False
+    G2sAllowed=True
+    ExtremeAllowed=True
     ExtremeAllowedForG2s=False
     ImperfectTractsAllowed=1
     BulgedTractsOnly=False
@@ -151,7 +151,7 @@ def crateRandomList(limitStart,limitEnd,size):
 
 
 # for iteration in range(1000):
-def iterate(args):
+def iterate(args,test=False):
 
     typLoopMax=7
     shrtLoopMax=2
@@ -175,16 +175,33 @@ def iterate(args):
     FP=0
     G4List=[]
     nonG4List=[]
-    useG4List=(44, 71, 95, 26, 149, 56, 162, 145, 253, 129, 171, 271, 244, 285, 277, 108, 104, 73, 53, 37, 187, 236, 66, 296, 93,
-     21, 199, 256, 283, 192, 278, 72, 251, 30, 205, 77, 299, 260, 290, 228, 55, 35, 148, 152, 186, 29, 211, 235, 289,
-     103, 122, 173, 79, 262, 13, 276, 127, 210, 284, 206, 155, 232, 59, 84, 259, 229, 202, 22, 223, 266, 189, 249, 160,
-     241, 123, 101, 227, 15, 181, 246, 231, 109, 132, 99, 97, 47, 238, 78, 194, 28, 25, 195, 222, 150, 24, 243, 264,
-     119, 1, 34, 133, 12, 225, 50, 117, 220, 96, 18, 54, 193, 275, 204, 161, 159, 86, 255, 48, 58, 298, 230, 19, 11,
-     135, 112, 190, 76, 203, 92, 270, 63, 154, 70, 82, 75, 31, 293, 250, 2, 9, 175, 201, 61, 17, 20, 282, 207, 143, 183,
-     156, 295, 200, 146, 169, 196, 74, 138, 144, 14, 23, 164, 170, 98, 43, 106, 274, 240, 158, 219, 3, 32, 180, 172, 45,
-     292, 287, 126, 226, 62, 16, 69, 38, 67, 41, 107, 110, 5, 197, 141, 191, 60, 178, 261, 174, 124, 51, 263, 157, 42,
-     33, 239)
-    usenonG4List=(343, 370, 314, 390, 359, 316, 344, 388, 391, 360, 339, 362, 322, 321, 324, 328, 356, 331, 352, 366, 373, 363, 369, 311, 300, 312, 307, 301, 376, 319, 330, 385, 389, 377, 336, 349, 387, 368, 306, 345, 361, 318, 340, 380, 354, 323, 332, 371, 313, 342)
+
+    useG4List=(52, 282, 67, 71, 133, 114, 90, 155, 63, 32, 124, 196, 26, 176, 184, 5, 287, 252, 147, 154, 128, 2, 1, 85, 293, 277, 88, 197, 172, 113, 77, 212, 14, 123, 258, 236, 265, 270, 246, 37, 9, 152, 86, 187, 170, 220, 243, 129, 189, 11, 24, 60, 193, 110, 87, 262, 80, 255, 36, 232, 8, 156, 198, 45, 263, 249, 218, 75, 93, 16, 217, 102, 141, 27, 120, 4, 104, 12, 219, 92, 190, 41, 74, 58, 195, 158, 138, 175, 18, 259, 247, 201, 62, 53, 54, 191, 43, 188, 185, 205, 20, 226, 70, 165, 275, 231, 108, 57, 202, 178, 145, 199, 222, 294, 122, 118, 61, 94, 139, 149, 146, 33, 95, 192, 79, 257, 285, 166, 292, 82, 210, 279, 107, 281, 66, 241, 125, 31, 163, 148, 106, 10, 251, 127, 143, 235, 213, 101, 103, 299, 264, 186, 223, 164, 271, 261, 204, 266, 267, 34, 40, 171, 121, 221, 157, 227, 6, 215, 142, 83, 200, 291, 216, 162, 240, 42, 237, 272, 283, 168, 268, 136, 91, 278, 173, 161, 30, 245, 48, 286, 203, 68, 132, 297, 3, 151, 225, 159, 22, 98)
+
+    usenonG4List=(330, 313, 328, 314, 388, 315, 375, 346, 387, 333, 308, 371, 302, 344, 342, 393, 351, 319, 372, 321, 369, 312, 359, 376, 367, 365, 368, 341, 317, 383, 310, 331, 301, 361, 377, 347, 364, 350, 378, 352, 385, 336, 307, 323, 316, 374, 366, 382, 326, 337)
+    print("--------start--------")
+    if  test:
+        newG4=[]
+        newnonG4=[]
+        for i in range(1,299):
+
+            if i not in useG4List:
+                newG4.append(i)
+            #     print ("test set")
+            # else:
+            #     print("training set")
+        for i in range(299,393):
+            if i not in usenonG4List:
+                newnonG4.append(i)
+            #     print ("test set")
+            # else:
+            #     print("training set")
+        # print("now using test set"),
+        # print(newG4)
+        # print(newnonG4)
+        useG4List=tuple(newG4)
+        usenonG4List=tuple(newnonG4)
+    print("--------end--------")
 
     # useG4List=range(298)
     # usenonG4List=range(299,392)
@@ -192,12 +209,12 @@ def iterate(args):
     for line in output.splitlines():
         if line.__contains__("not GQ_"):
             G4no=int(re.search(r"[0-9]+",line).group(0))
-            if G4no not in G4List and G4no is usenonG4List :
+            if G4no not in G4List and G4no in usenonG4List :
                 score=G4HScore(re.search(r"[ATCUG]{5,}",line).group(0))
                 if abs(score)>=G4HScoreTreshold:
                     G4List.append(G4no)
                     FP+=1
-                    # print line,score
+                    # print line,G4no,score
         elif line.__contains__("GQ_"):
             G4no=int(re.search(r"[0-9]+",line).group(0))
             if G4no not in nonG4List and G4no in useG4List:
@@ -205,7 +222,7 @@ def iterate(args):
                 if abs(score)>=G4HScoreTreshold:
                     nonG4List.append(G4no)
                     TP+=1
-                    # print line,score
+                    # print line,G4no, score
 
     if TP==0 and FP==0: return #exit() #if nothing exists then exit without error.
     # FN=71-TP
@@ -213,7 +230,9 @@ def iterate(args):
     FN = len(useG4List)- TP
     TN = len(usenonG4List)- FP
     # print "TP:",TP,"FP:",FP,"FN:",FN,"TN:",TN
-    MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
+    # MCC=(TP*TN-FP*FN)/ math.sqrt((TP+FP)*(TP+FN)*(TN+FP)*(TN+FN))
+    Youden=float(TP/float(TP+FN))+float(TN/float(TN+FP))-1 #youden's statistics
+    # print((TP/float(TP+FN)),(TN/float(TN+FP)),MCC)
     # print "MCC:",MCC
     precision=float(TP)/(TP+FP)
     # print "precision:",precision*100,"%"
@@ -225,12 +244,12 @@ def iterate(args):
     # print(TP,TN,FP,FN,MCC)
     if len(args)==3:
         # report= str(typLoopMax)+"\t"+str(shrtLoopMax)+"\t"+str(extLoopMax)+"\t"+str(MCC)+"\t"+str(float(TP)/298)+"\t"+str(float(FP)/94)
-        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94}
+        report= {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":Youden,"TPR":float(TP)/len(useG4List),"FPR":float(FP)/len(usenonG4List)}
 
 
     elif len(args)==6:
         # report= str(typLoopMax) + "\t" + str(shrtLoopMax) + "\t" + str(extLoopMax) + "\t" + str(typLoopMin) + "\t" + str(shrtLoopMin) + "\t" + str(extLoopMin) + "\t" +  str(MCC) + "\t" + str(float(TP) / 298) + "\t" + str(float(FP) / 94)
-        report = {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":MCC,"TPR":float(TP)/298,"FPR":float(FP)/94,"typLoopMin":typLoopMin, "shrtLoopMin":shrtLoopMin,"shrtLoopMin":extLoopMin}
+        report = {"typLoopMax":typLoopMax,"shrtLoopMax":shrtLoopMax,"extLoopMax":extLoopMax,"MCC":Youden,"TPR":float(TP)/len(useG4List),"FPR":float(FP)/len(usenonG4List),"typLoopMin":typLoopMin, "shrtLoopMin":shrtLoopMin,"shrtLoopMin":extLoopMin}
 
     return report
 
@@ -245,16 +264,43 @@ if __name__=="__main__":
     # print(useG4List)
     # print(usenonG4List)
 
-    p=multiprocessing.Pool(30)
+    p=multiprocessing.Pool(1)
 
-    allParams=list(itertools.product(*[[t for t in range(1,16)],[s for s in range(1,16)],[e for e in range(15,45)]]))
+    allParams=list(itertools.product(*[[t for t in range(1,16)],[s for s in range(1,16)],[e for e in range(15,46)]]))
 
-    results=p.map(iterate,allParams )
-
-
+    results=p.map(iterate,allParams)
+    print("--------------------------------------------------------------")
+    bestSet=[{"typLoopMax":0,"shrtLoopMax":0,"extLoopMax":0,"MCC":0,"TPR":0,"FPR":0}]
     for hit in results:
         if hit!=None:
             print "\t".join([str(hit["typLoopMax"]),str(hit["shrtLoopMax"]),str(hit["extLoopMax"]),str(hit["MCC"]),str(hit["TPR"]),str(hit["FPR"])])
+            if hit["MCC"]>bestSet[0]["MCC"]:
+                print(hit["MCC"])
+                bestSet=[hit]
+            elif hit["MCC"] == bestSet[0]["MCC"]:
+                print(hit["MCC"])
+                bestSet.append(hit)
+    print("--------------------------------------------------------------")
+
+    # allParams=list(itertools.product(*[[t["typLoopMax"] for t in bestSet],[s["shrtLoopMax"] for s in bestSet],[e["extLoopMax"] for e in bestSet]]))
+    # print(allParams[0])
+    #
+    # Tests=p.map(iterate,allParams)
+    Tests=[]
+    for params in bestSet:
+        Tests.append(iterate((params["typLoopMax"],params["shrtLoopMax"],params["extLoopMax"],),True))
+
+    bestTests=[Tests[0]]
+    for hit in Tests:
+        if hit["MCC"] > bestTests[0]["MCC"]:
+            # print(hit["MCC"])
+            bestTests = [hit]
+        elif hit["MCC"] == bestTests[0]["MCC"]:
+            # print(hit["MCC"])
+            bestTests.append(hit)
+    print("best MCC:",bestTests[0]["MCC"])
+    for set in bestTests:
+        print(set)
 
     """THIS CODE FINDS THE HITS THAT HAS THE BEST TPR FOR EACH FPR"""
     #
@@ -276,6 +322,7 @@ if __name__=="__main__":
 
     """END"""
 
+"""LATEST CHANGES FINDS BEST PARAMETERS USING A TRAINING SET AND COMPARES TO A TEST SET"""
 
 
 
